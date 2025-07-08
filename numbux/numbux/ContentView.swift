@@ -1,4 +1,3 @@
-
 //
 //  ContentView.swift
 //  numbux
@@ -14,33 +13,29 @@ struct NumbuXAppBar: View {
     let enabled: Bool
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color.black
-                    .ignoresSafeArea()
-                Text("")
-                    .foregroundColor(.white)
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: { withAnimation { isDrawerOpen.toggle() } }) {
-                        Image(systemName: "line.horizontal.3")
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            Text("")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: { withAnimation { isDrawerOpen.toggle() } }) {
+                            Image(systemName: "line.horizontal.3")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(isDrawerOpen ? .orange : .white)
+                                .padding(.leading, 18)
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Image("logo_blanco_numbux")
                             .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(isDrawerOpen ? .orange : .white)
-                            .padding(.leading, 18)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 100, height: 100)
+                            .padding(.trailing, 6)
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Image("logo_blanco_numbux")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 100, height: 100)
-                        .padding(.trailing, 6)
-                }
-            }
-            .background(Color.clear)
         }
         .accentColor(.white)
         .onAppear {
@@ -53,24 +48,18 @@ struct NumbuXAppBar: View {
 }
 
 // MARK: - Main Content View
-
 struct ContentView: View {
     @State private var isDrawerOpen = false
     @State private var enabled = false
 
     var body: some View {
-        ZStack {
-            Color.black
-                .ignoresSafeArea()
-
+        NavigationView {
             VStack(spacing: 0) {
-                // Top app bar
                 NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: enabled)
-
-                // Calculator view below the header
                 BasicCalculatorView()
                     .padding()
             }
+            .background(Color.black.ignoresSafeArea())
         }
     }
 }

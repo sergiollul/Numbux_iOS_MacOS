@@ -15,7 +15,9 @@ struct BlinkingCursorField: View {
 
     var body: some View {
         ZStack(alignment: .trailing) {
+            // Display typed text in white so it's visible on black background
             Text(text)
+                .foregroundColor(.white)
                 .font(.system(size: 40, weight: .regular, design: .default))
                 .frame(maxWidth: .infinity, alignment: .trailing)
 
@@ -38,7 +40,7 @@ struct CalculatorButton: View {
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.system(size: fontSize, weight: fontWeight))
+                .font(.system(size: fontSize, weight: .regular))
                 .frame(maxWidth: .infinity, maxHeight: 64)
                 .background(buttonColor)
                 .foregroundColor(contentColor)
@@ -54,10 +56,10 @@ struct CalculatorButton: View {
         }
     }
 
-    private var fontWeight: Font.Weight { .regular }
-
     private var buttonColor: Color {
-        if label.rangeOfCharacter(from: .decimalDigits) != nil || label == "." || label == "+/-" {
+        if label == "=" {
+            return Color(red: 1.0, green: 0.3882353, blue: 0.0) // #FF6300
+        } else if label.rangeOfCharacter(from: .decimalDigits) != nil || label == "." || label == "+/-" {
             return Color(white: 0.09)
         } else if ["÷", "×", "+", "−"].contains(label) {
             return Color.gray
@@ -67,7 +69,9 @@ struct CalculatorButton: View {
     }
 
     private var contentColor: Color {
-        if label.rangeOfCharacter(from: .decimalDigits) != nil || label == "." || label == "+/-" {
+        if label == "=" {
+            return .white
+        } else if label.rangeOfCharacter(from: .decimalDigits) != nil || label == "." || label == "+/-" {
             return .white
         } else if label == "C" || label == "%" {
             return .white
@@ -116,6 +120,7 @@ struct BasicCalculatorView: View {
                 .padding(.horizontal, 16)
             }
         }
+        .background(Color.black) // ensure background stays black behind buttons
     }
 
     private func handlePress(_ label: String) {
