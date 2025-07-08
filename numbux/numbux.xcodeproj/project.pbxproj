@@ -14,6 +14,7 @@
 		0F51025A2E1D72C100DE1126 /* numbuxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5102592E1D72C100DE1126 /* numbuxTests.swift */; };
 		0F5102642E1D72C100DE1126 /* numbuxUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5102632E1D72C100DE1126 /* numbuxUITests.swift */; };
 		0F5102662E1D72C100DE1126 /* numbuxUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5102652E1D72C100DE1126 /* numbuxUITestsLaunchTests.swift */; };
+		0F5102732E1D791D00DE1126 /* BasicCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5102722E1D791D00DE1126 /* BasicCalculatorView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		0F51025F2E1D72C100DE1126 /* numbuxUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = numbuxUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F5102632E1D72C100DE1126 /* numbuxUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numbuxUITests.swift; sourceTree = "<group>"; };
 		0F5102652E1D72C100DE1126 /* numbuxUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numbuxUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0F5102722E1D791D00DE1126 /* BasicCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicCalculatorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +100,7 @@
 				0F51024A2E1D72BF00DE1126 /* ContentView.swift */,
 				0F51024C2E1D72C100DE1126 /* Assets.xcassets */,
 				0F51024E2E1D72C100DE1126 /* Preview Content */,
+				0F5102722E1D791D00DE1126 /* BasicCalculatorView.swift */,
 			);
 			path = numbux;
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 			files = (
 				0F51024B2E1D72BF00DE1126 /* ContentView.swift in Sources */,
 				0F5102492E1D72BF00DE1126 /* numbuxApp.swift in Sources */,
+				0F5102732E1D791D00DE1126 /* BasicCalculatorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
