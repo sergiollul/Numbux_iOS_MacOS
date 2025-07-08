@@ -15,7 +15,6 @@ struct BlinkingCursorField: View {
 
     var body: some View {
         ZStack(alignment: .trailing) {
-            // Display typed text in white so it's visible on black background
             Text(text)
                 .foregroundColor(.white)
                 .font(.system(size: 40, weight: .regular, design: .default))
@@ -120,7 +119,7 @@ struct BasicCalculatorView: View {
                 .padding(.horizontal, 16)
             }
         }
-        .background(Color.black) // ensure background stays black behind buttons
+        .background(Color.black)
     }
 
     private func handlePress(_ label: String) {
@@ -135,21 +134,23 @@ struct BasicCalculatorView: View {
     }
 
     private func insertParenthesis() {
-        let openCount = text.filter { $0 == "(" }.count
-        let closeCount = text.filter { $0 == ")" }.count
-        text += openCount > closeCount ? ")" : "("
+        let opens = text.filter { $0 == "(" }.count
+        let closes = text.filter { $0 == ")" }.count
+        text += opens > closes ? ")" : "("
     }
 
     private func toggleSign() {
-        if text.first == "-" { text.removeFirst() }
+        if text.starts(with: "-") { text.removeFirst() }
         else { text = "-" + text }
     }
 
     private func evaluate() {
-        let expr = text
-            .replacingOccurrences(of: "×", with: "*")
+        // Replace '%' with multiplication by 0.01 to handle percentages
+        var expr = text.replacingOccurrences(of: "×", with: "*")
             .replacingOccurrences(of: "÷", with: "/")
             .replacingOccurrences(of: "−", with: "-")
+        expr = expr.replacingOccurrences(of: "%", with: "*0.01")
+
         let result = NSExpression(format: expr).expressionValue(with: nil, context: nil) as? NSNumber
         text = result?.stringValue ?? "Error"
     }
@@ -162,3 +163,4 @@ struct BasicCalculatorView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+
