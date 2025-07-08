@@ -70,6 +70,8 @@ struct CalculatorButton: View {
     private var contentColor: Color {
         if label == "=" {
             return .white
+        } else if label == "( )" {
+            return .white
         } else if label.rangeOfCharacter(from: .decimalDigits) != nil || label == "." || label == "+/-" {
             return .white
         } else if label == "C" || label == "%" {
