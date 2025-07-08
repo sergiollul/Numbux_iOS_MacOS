@@ -145,12 +145,26 @@ struct BasicCalculatorView: View {
     }
 
     private func evaluate() {
-        // Replace '%' with multiplication by 0.01 to handle percentages
-        var expr = text.replacingOccurrences(of: "×", with: "*")
+        // Prepare expression string
+        var expr = text
+            .replacingOccurrences(of: "×", with: "*")
             .replacingOccurrences(of: "÷", with: "/")
             .replacingOccurrences(of: "−", with: "-")
+        // Handle percentages
         expr = expr.replacingOccurrences(of: "%", with: "*0.01")
+        // Insert implicit multiplication (e.g., 5( -> 5*(, )( -> )*, 2(3 -> 2*(3)
+        expr = expr.replacingOccurrences(
+            of: "(?<=[0-9)])\\(",
+            with: "*(",
+            options: .regularExpression
+        )
+        expr = expr.replacingOccurrences(
+            of: "\\)(?=[0-9(])",
+            with: ")*",
+            options: .regularExpression
+        )
 
+        // Evaluate
         let result = NSExpression(format: expr).expressionValue(with: nil, context: nil) as? NSNumber
         text = result?.stringValue ?? "Error"
     }
