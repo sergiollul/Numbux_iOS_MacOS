@@ -32,11 +32,9 @@ struct DrawerContent: View {
             Toggle(isOn: $blockingEnabled) {
                 Text("Modo Foco")
                     .foregroundColor(.white)
-                    .font(.system(size: 30))
+                    .font(.system(size: 22))
             }
-            .toggleStyle(SwitchToggleStyle(tint: .accentOrange))
-            .controlSize(.small)           // <-- makes the switch a bit smaller
-            .scaleEffect(0.8, anchor: .leading) // <-- fine-tune the size
+            .toggleStyle(OrangeBorderToggleStyle())
             .padding(.leading, 6)
             .padding(.vertical, 24)
             .onChange(of: blockingEnabled) { newValue in
@@ -55,7 +53,7 @@ struct DrawerContent: View {
                 .bold()
 
             // Page selector
-            HStack(spacing: 24) {
+            HStack(spacing: 20) {
                 Button {
                     if currentPage > 1 { currentPage -= 1 }
                 } label: {
@@ -144,6 +142,39 @@ struct NumbuXAppBar: View {
         }
     }
 }
+
+/// Toggle con borde naranja, fondo negro y círculo naranja cuando está OFF
+struct OrangeBorderToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.label
+            Spacer()
+            ZStack {
+                // the capsule – orange when on, black when off
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(configuration.isOn ? Color.accentOrange : Color.black)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.accentOrange, lineWidth: 2)
+                    )
+                    .frame(width: 50, height: 30)
+
+                // the knob – black when on, orange when off
+                Circle()
+                    .fill(configuration.isOn ? Color.black : Color.accentOrange)
+                    .frame(width: 26, height: 26)
+                    .offset(x: configuration.isOn ? 10 : -10)
+                    .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
+            }
+            .onTapGesture { configuration.isOn.toggle() }
+        }
+    }
+
+    // Tamaños de ejemplo; cámbialos a tu gusto
+    private let Fifty: CGFloat = 50
+    private let thirty: CGFloat = 30
+}
+
 
 // MARK: - Main Content View
 struct ContentView: View {
