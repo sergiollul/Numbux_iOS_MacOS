@@ -21,7 +21,7 @@ struct DrawerContent: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Spacer().frame(height: 28)
+            Spacer().frame(height: 14)
 
             Text("NumbuX")
                 .font(.system(size: 28))
