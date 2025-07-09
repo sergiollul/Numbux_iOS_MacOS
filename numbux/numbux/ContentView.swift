@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+// Custom accent color from hex #FF6300
+extension Color {
+    static let accentOrange = Color(red: 1.0, green: 0.3882353, blue: 0.0)
+}
+
 // MARK: - Drawer Content
 struct DrawerContent: View {
     @Binding var blockingEnabled: Bool
@@ -20,11 +25,11 @@ struct DrawerContent: View {
 
             Text("NumbuX")
                 .font(.system(size: 20))
-                .foregroundColor(.orange)
+                .foregroundColor(.accentOrange)
                 .padding(.vertical, 8)
 
             Toggle("Focus Mode", isOn: $blockingEnabled)
-                .toggleStyle(SwitchToggleStyle(tint: .orange))
+                .toggleStyle(SwitchToggleStyle(tint: .accentOrange))
                 .padding(.vertical, 8)
                 .onChange(of: blockingEnabled) { newValue in
                     if !newValue {
@@ -37,7 +42,7 @@ struct DrawerContent: View {
             // Page title
             Text(pageTitle)
                 .font(.system(size: 16))
-                .foregroundColor(.orange)
+                .foregroundColor(.accentOrange)
                 .padding(.bottom, 2)
 
             // Page selector
@@ -47,7 +52,7 @@ struct DrawerContent: View {
                 } label: {
                     Image(systemName: "chevron.left.circle.fill")
                         .font(.system(size: 46))
-                        .foregroundColor(.orange)
+                        .foregroundColor(.accentOrange)
                 }
 
                 Text("\(currentPage)")
@@ -59,7 +64,7 @@ struct DrawerContent: View {
                 } label: {
                     Image(systemName: "chevron.right.circle.fill")
                         .font(.system(size: 46))
-                        .foregroundColor(.orange)
+                        .foregroundColor(.accentOrange)
                 }
             }
             .padding(.bottom, 2)
@@ -77,7 +82,7 @@ struct DrawerContent: View {
                 .fill(Color.black.opacity(0.7))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.orange.opacity(0.8), lineWidth: 2)
+                        .stroke(Color.accentOrange.opacity(0.8), lineWidth: 2)
                 )
         )
         .ignoresSafeArea(edges: .bottom)
@@ -109,7 +114,7 @@ struct NumbuXAppBar: View {
                             Image(systemName: "line.horizontal.3")
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                                .foregroundColor(isDrawerOpen ? .orange : .white)
+                                .foregroundColor(isDrawerOpen ? .accentOrange : .white)
                                 .padding(.leading, 18)
                         }
                     }
