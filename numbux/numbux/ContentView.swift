@@ -24,18 +24,23 @@ struct DrawerContent: View {
             Spacer().frame(height: 28)
 
             Text("NumbuX")
-                .font(.system(size: 20))
+                .font(.system(size: 28))
+                .bold()
                 .foregroundColor(.accentOrange)
-                .padding(.vertical, 8)
+                .padding(.vertical, 0)
 
-            Toggle("Focus Mode", isOn: $blockingEnabled)
-                .toggleStyle(SwitchToggleStyle(tint: .accentOrange))
-                .padding(.vertical, 8)
-                .onChange(of: blockingEnabled) { newValue in
-                    if !newValue {
-                        showDisablePinAlert = true
-                    }
+            Toggle(isOn: $blockingEnabled) {
+                Text("Modo Foco")
+                    .foregroundColor(.white)
+                    .font(.system(size: 22))
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .accentOrange))
+            .padding(.vertical, 24)
+            .onChange(of: blockingEnabled) { newValue in
+                if !newValue {
+                    showDisablePinAlert = true
                 }
+            }
 
             Spacer()
 
