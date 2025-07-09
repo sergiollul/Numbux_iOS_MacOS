@@ -24,7 +24,7 @@ struct DrawerContent: View {
             Spacer().frame(height: 14)
 
             Text("NumbuX")
-                .font(.system(size: 28))
+                .font(.system(size: 30))
                 .bold()
                 .foregroundColor(.accentOrange)
                 .padding(.vertical, 0)
@@ -32,9 +32,12 @@ struct DrawerContent: View {
             Toggle(isOn: $blockingEnabled) {
                 Text("Modo Foco")
                     .foregroundColor(.white)
-                    .font(.system(size: 22))
+                    .font(.system(size: 30))
             }
             .toggleStyle(SwitchToggleStyle(tint: .accentOrange))
+            .controlSize(.small)           // <-- makes the switch a bit smaller
+            .scaleEffect(0.8, anchor: .leading) // <-- fine-tune the size
+            .padding(.leading, 6)
             .padding(.vertical, 24)
             .onChange(of: blockingEnabled) { newValue in
                 if !newValue {
@@ -46,9 +49,10 @@ struct DrawerContent: View {
 
             // Page title
             Text(pageTitle)
-                .font(.system(size: 16))
+                .font(.system(size: 22))
                 .foregroundColor(.accentOrange)
-                .padding(.bottom, 2)
+                .padding(.bottom, 7)
+                .bold()
 
             // Page selector
             HStack(spacing: 24) {
@@ -56,28 +60,27 @@ struct DrawerContent: View {
                     if currentPage > 1 { currentPage -= 1 }
                 } label: {
                     Image(systemName: "chevron.left.circle.fill")
-                        .font(.system(size: 46))
+                        .font(.system(size: 30))
                         .foregroundColor(.accentOrange)
                 }
 
                 Text("\(currentPage)")
-                    .font(.system(size: 32))
+                    .font(.system(size: 40))
                     .foregroundColor(.white)
 
                 Button {
                     if currentPage < maxPage { currentPage += 1 }
                 } label: {
                     Image(systemName: "chevron.right.circle.fill")
-                        .font(.system(size: 46))
+                        .font(.system(size: 30))
                         .foregroundColor(.accentOrange)
                 }
             }
             .padding(.bottom, 2)
 
             Text("Cambiar Herramienta")
-                .font(.system(size: 10))
+                .font(.system(size: 15))
                 .foregroundColor(.white)
-                .padding(.bottom, 6)
 
             Spacer()
         }
