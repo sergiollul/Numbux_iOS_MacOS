@@ -169,9 +169,8 @@ struct OrangeBorderToggleStyle: ToggleStyle {
                 // the knob – black when on, orange when off
                 Circle()
                         .fill(configuration.isOn ? Color.black : Color.accentOrange)
-                        .frame(width: 20, height: 20)
-                        // 42/2 = 21; 21 − (20/2) = 11; minus 2pt padding → 9
-                        .offset(x: configuration.isOn ?  9 : -9)
+                        .frame(width: 16, height: 16)           // ← smaller here
+                        .offset(x: configuration.isOn ?  10 : -10)
                         .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
                 }
                 .frame(width: 42, height: 24)
