@@ -24,7 +24,7 @@ struct DrawerContent: View {
             Spacer().frame(height: 14)
 
             Text("NumbuX")
-                .font(.system(size: 30))
+                .font(.system(size: 32))
                 .bold()
                 .foregroundColor(.accentOrange)
                 .padding(.top, 38)
@@ -35,34 +35,27 @@ struct DrawerContent: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Modo Foco:")
                     .foregroundColor(.white)
-                    .font(.system(size: 22))
+                    .font(.system(size: 23))
                     .padding(.top, 20)
                     .padding(.leading, 12)
 
                 // luego en una línea aparte el toggle + estado
-                HStack {
-                    // toggle fijo
+                HStack(alignment: .center, spacing: 12) {
                     Toggle("", isOn: $blockingEnabled)
                         .labelsHidden()
                         .toggleStyle(OrangeBorderToggleStyle())
-                        .fixedSize()
-                        .padding(.top, 10)
-                        .onChange(of: blockingEnabled) { newValue in
-                            if !newValue {
-                                showDisablePinAlert = true
-                            }
-                        }
+                        .frame(width: 42, height: 24)    // same size as your style
+                        .fixedSize()                     // guard against unexpected stretching
 
-                    // texto de estado
                     Text(blockingEnabled ? "Activado" : "Desactivado")
                         .foregroundColor(.white)
-                        .font(.system(size: 20))
-                        .lineLimit(1)
+                        .font(.system(size: 19))
+                        .frame(height: 24)              // match the toggle’s height
                         .fixedSize(horizontal: true, vertical: false)
-
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 0)
+                .padding(.leading, 9)
+                .padding(.top, 10)
             }
 
             Spacer()
