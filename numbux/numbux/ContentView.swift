@@ -29,20 +29,39 @@ struct DrawerContent: View {
                 .foregroundColor(.accentOrange)
                 .padding(.vertical, 0)
 
-            Toggle(isOn: $blockingEnabled) {
+            HStack {
+                // Columna 1: Label = muy flexible
                 Text("Modo Foco")
                     .foregroundColor(.white)
                     .font(.system(size: 22))
-            }
-            .toggleStyle(OrangeBorderToggleStyle())
-            .padding(.leading, 6)
-            .padding(.vertical, 24)
-            .onChange(of: blockingEnabled) { newValue in
-                if !newValue {
-                    showDisablePinAlert = true
-                }
-            }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .layoutPriority(1)    // gana espacio si hay conflicto
 
+                // Columna 2: Toggle = siempre ″corta″
+                Toggle("", isOn: $blockingEnabled)
+                    .labelsHidden()
+                    .toggleStyle(OrangeBorderToggleStyle())
+                    .onChange(of: blockingEnabled) { newValue in
+                        if !newValue {
+                            showDisablePinAlert = true
+                        }
+                    }
+                    .frame(width: 60)     // fíjalo al ancho que quieras
+
+                // Columna 3: Estado = muy flexible
+                Text(blockingEnabled ? "Activado" : "Desactivado")
+                    .foregroundColor(.white)
+                    .font(.system(size: 20))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .layoutPriority(1)    // gana espacio si hay conflicto
+            }
+            .frame(maxWidth: .infinity)    // para ocupar todo el ancho padre
+            .padding(.horizontal, 6)
+            .padding(.vertical, 24)
+
+            
             Spacer()
 
             // Page title
@@ -154,8 +173,10 @@ struct OrangeBorderToggleStyle: ToggleStyle {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(configuration.isOn ? Color.accentOrange : Color.black)
                     .overlay(
+                        // fade the border out when on
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.accentOrange, lineWidth: 2)
+                            .opacity(configuration.isOn ? 0 : 1)
                     )
                     .frame(width: 50, height: 30)
 
