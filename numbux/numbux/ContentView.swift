@@ -27,7 +27,8 @@ struct DrawerContent: View {
                 .font(.system(size: 30))
                 .bold()
                 .foregroundColor(.accentOrange)
-                .padding(.vertical, 0)
+                .padding(.vertical, 35)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack {
                 // Columna 1: Label = muy flexible
