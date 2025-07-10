@@ -202,14 +202,13 @@ struct ContentView: View {
     @State private var showDisablePinAlert = false
     @State private var currentPage = 1
     private let maxPage = 3
-    
+
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // ─── Main app ───────────────────────────
+        ZStack {
+            // ─── Main App ───────────────────────────
             NavigationView {
                 VStack(spacing: 0) {
                     NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: blockingEnabled)
-                    
                     Spacer()
                     BasicCalculatorView()
                         .padding()
@@ -219,48 +218,57 @@ struct ContentView: View {
                 .navigationBarHidden(false)
             }
             .accentColor(.white)
-            
-            // ─── Overlay drawer ─────────────────────
-            ZStack {
-                // … your main content …
-                
-                if isDrawerOpen {
-                    // Dimmed scrim
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation { isDrawerOpen = false }
-                        }
-                    
-                    // Drawer at bottom, 70% of screen height
-                    GeometryReader { geo in
-                        VStack {
-                            Spacer()
-                            DrawerContent(
-                                blockingEnabled: $blockingEnabled,
-                                showDisablePinAlert: $showDisablePinAlert,
-                                currentPage: $currentPage,
-                                maxPage: maxPage
-                            )
-                            .frame(height: geo.size.height * 0.7)
-                            .transition(.move(edge: .bottom))
-                        }
-                        .ignoresSafeArea(edges: .bottom)
+
+            // ─── Overlay Drawer ─────────────────────
+            if isDrawerOpen {
+                // 1) Semi-transparent scrim
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation { isDrawerOpen = false }
                     }
-                    .animation(.easeInOut, value: isDrawerOpen)
+
+                // 2) Side panel
+                GeometryReader { geo in
+                    HStack(spacing: 0) {
+                        DrawerContent(
+                            blockingEnabled: $blockingEnabled,
+                            showDisablePinAlert: $showDisablePinAlert,
+                            currentPage: $currentPage,
+                            maxPage: maxPage
+                        )
+                        .frame(
+                            width: geo.size.width * 0.8,      // you can adjust width if you like
+                            height: geo.size.height * 0.83    // 83% height
+                        )
+                        .background(Color.black.opacity(0.2))
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.accentOrange.opacity(0.8), lineWidth: 2)
+                        )
+                        .shadow(radius: 5)
+                        .transition(.move(edge: .leading))   // slide in from left
+
+                        Spacer()  // push everything to the left
+                    }
+                    .ignoresSafeArea(edges: .all)
                 }
+                .animation(.easeInOut, value: isDrawerOpen)
             }
-            .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
-                Button("Cancel", role: .cancel) { blockingEnabled = true }
-                Button("OK") { blockingEnabled = false }
-            }
+        }
+        .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
+            Button("Cancel", role: .cancel) { blockingEnabled = true }
+            Button("OK") { blockingEnabled = false }
         }
     }
+}
+
     
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-                .preferredColorScheme(.dark)
-        }
-    }}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .preferredColorScheme(.dark)
+    }
+}
 
