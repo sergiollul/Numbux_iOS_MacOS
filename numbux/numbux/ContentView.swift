@@ -198,21 +198,21 @@ struct OrangeBorderToggleStyle: ToggleStyle {
 
 // MARK: - Main Content View
 struct ContentView: View {
-    @State private var isDrawerOpen = false
-    @State private var blockingEnabled = false
+    @State private var isDrawerOpen       = false
+    @State private var dragOffset: CGFloat = 0
+    @State private var blockingEnabled    = false
     @State private var showDisablePinAlert = false
-    @State private var currentPage = 1
-    private let maxPage = 3
+    @State private var currentPage        = 1
+    private let maxPage                  = 3
 
     var body: some View {
-        ZStack {
-            // ─── Main App ───────────────────────────
+        ZStack(alignment: .leading) {
+            // ─── Main App ─────────────────────────────────
             NavigationView {
                 VStack(spacing: 0) {
                     NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: blockingEnabled)
                     Spacer()
-                    BasicCalculatorView()
-                        .padding()
+                    BasicCalculatorView().padding()
                     Spacer()
                 }
                 .background(Color.black.ignoresSafeArea())
@@ -220,17 +220,16 @@ struct ContentView: View {
             }
             .accentColor(.white)
 
-            // ─── Overlay Drawer ─────────────────────
+            // ─── Scrim + Drawer ───────────────────────────
             if isDrawerOpen {
-                // 1) Semi-transparent scrim
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation { isDrawerOpen = false }
-                    }
+                    .onTapGesture { withAnimation { closeDrawer() } }
 
-                // 2) Side panel
                 GeometryReader { geo in
+                    let w = geo.size.width * 0.8
+                    let h = geo.size.height * 0.83
+
                     HStack(spacing: 0) {
                         DrawerContent(
                             blockingEnabled: $blockingEnabled,
@@ -238,32 +237,65 @@ struct ContentView: View {
                             currentPage: $currentPage,
                             maxPage: maxPage
                         )
-                        .frame(
-                            width: geo.size.width * 0.8,      // you can adjust width if you like
-                            height: geo.size.height * 0.83    // 83% height
-                        )
+                        .frame(width: w, height: h)
                         .background(Color.black.opacity(0.2))
                         .cornerRadius(16)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(Color.accentOrange.opacity(0.8), lineWidth: 2)
                         )
-                        .shadow(radius: 5)
-                        .transition(.move(edge: .leading))   // slide in from left
-
-                        Spacer()  // push everything to the left
+                        // → posición base + desplazamiento de gesto
+                        .offset(x: -w + (isDrawerOpen ? w : 0) + dragOffset)
+                        Spacer()
                     }
-                    .ignoresSafeArea(edges: .all)
                 }
-                .animation(.easeInOut, value: isDrawerOpen)
+                .ignoresSafeArea()
             }
         }
+        // ─── Gesto global de abrir/cerrar ───────────────
+        .highPriorityGesture(
+            DragGesture(minimumDistance: 20, coordinateSpace: .global)
+                .onChanged { v in
+                    // si está abierto y arrastramos a la izquierda, movemos el panel
+                    if isDrawerOpen && v.translation.width < 0 {
+                        dragOffset = v.translation.width
+                    }
+                }
+                .onEnded { v in
+                    let openThreshold  = 100.0
+                    let closeThreshold = -100.0
+
+                    if !isDrawerOpen {
+                        // start from very left edge & swipe right → abrir
+                        if v.startLocation.x < 30 && v.translation.width > openThreshold {
+                            withAnimation(.easeInOut) {
+                                isDrawerOpen = true
+                                dragOffset = 0
+                            }
+                        }
+                    } else {
+                        // swipe left enough → cerrar
+                        if v.translation.width < closeThreshold {
+                            withAnimation(.easeInOut) { closeDrawer() }
+                        } else {
+                            // si no llega al umbral, retrocede
+                            withAnimation(.easeInOut) { dragOffset = 0 }
+                        }
+                    }
+                }
+        )
         .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
             Button("Cancel", role: .cancel) { blockingEnabled = true }
-            Button("OK") { blockingEnabled = false }
+            Button("OK")               { blockingEnabled = false }
         }
     }
+
+    private func closeDrawer() {
+        isDrawerOpen = false
+        dragOffset   = 0
+    }
 }
+
 
     
 struct ContentView_Previews: PreviewProvider {
