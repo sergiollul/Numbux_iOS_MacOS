@@ -102,13 +102,11 @@ struct DrawerContent: View {
             Spacer()
         }
         .padding(16)
-        .background(
+        .background(Color.black.opacity(0.2))
+        .cornerRadius(16)
+        .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black.opacity(0.7))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.accentOrange.opacity(0.8), lineWidth: 2)
-                )
+                .stroke(Color.accentOrange.opacity(0.8), lineWidth: 2)
         )
         .ignoresSafeArea(edges: .bottom)
     }
@@ -204,45 +202,65 @@ struct ContentView: View {
     @State private var showDisablePinAlert = false
     @State private var currentPage = 1
     private let maxPage = 3
-
+    
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: blockingEnabled)
-
-                // Main content placeholder
-                Spacer()
-
-                BasicCalculatorView()
-                    .padding()
-
-                Spacer()
+        ZStack(alignment: .bottom) {
+            // ─── Main app ───────────────────────────
+            NavigationView {
+                VStack(spacing: 0) {
+                    NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: blockingEnabled)
+                    
+                    Spacer()
+                    BasicCalculatorView()
+                        .padding()
+                    Spacer()
+                }
+                .background(Color.black.ignoresSafeArea())
+                .navigationBarHidden(false)
             }
-            .background(Color.black.ignoresSafeArea())
-            .navigationBarHidden(false)
-        }
-        .accentColor(.white)
-        .sheet(isPresented: $isDrawerOpen) {
-            DrawerContent(
-                blockingEnabled: $blockingEnabled,
-                showDisablePinAlert: $showDisablePinAlert,
-                currentPage: $currentPage,
-                maxPage: maxPage
-            )
-            .presentationDetents([.fraction(0.83)])
-            .presentationDragIndicator(.visible)
-        }
-        .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
-            Button("Cancel", role: .cancel) { blockingEnabled = true }
-            Button("OK") { blockingEnabled = false }
+            .accentColor(.white)
+            
+            // ─── Overlay drawer ─────────────────────
+            ZStack {
+                // … your main content …
+                
+                if isDrawerOpen {
+                    // Dimmed scrim
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation { isDrawerOpen = false }
+                        }
+                    
+                    // Drawer at bottom, 70% of screen height
+                    GeometryReader { geo in
+                        VStack {
+                            Spacer()
+                            DrawerContent(
+                                blockingEnabled: $blockingEnabled,
+                                showDisablePinAlert: $showDisablePinAlert,
+                                currentPage: $currentPage,
+                                maxPage: maxPage
+                            )
+                            .frame(height: geo.size.height * 0.7)
+                            .transition(.move(edge: .bottom))
+                        }
+                        .ignoresSafeArea(edges: .bottom)
+                    }
+                    .animation(.easeInOut, value: isDrawerOpen)
+                }
+            }
+            .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
+                Button("Cancel", role: .cancel) { blockingEnabled = true }
+                Button("OK") { blockingEnabled = false }
+            }
         }
     }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .preferredColorScheme(.dark)
-    }
-}
+    
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView()
+                .preferredColorScheme(.dark)
+        }
+    }}
 
