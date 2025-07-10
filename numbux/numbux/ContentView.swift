@@ -217,8 +217,8 @@ struct ContentView: View {
                     .onTapGesture { withAnimation { closeDrawer() } }
 
                 GeometryReader { geo in
-                    let w = geo.size.width * 0.8
-                    let h = geo.size.height * 0.83
+                    let w = geo.size.width * 0.7
+                    let h = geo.size.height * 0.8
 
                     HStack(spacing: 0) {
                         DrawerContent(
