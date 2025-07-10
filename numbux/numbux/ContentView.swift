@@ -20,75 +20,70 @@ struct DrawerContent: View {
     let maxPage: Int
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             Spacer().frame(height: 14)
 
             Text("NumbuX")
                 .font(.system(size: 30))
                 .bold()
                 .foregroundColor(.accentOrange)
-                .padding(.vertical, 35)
+                .padding(.top, 38)
+                .padding(.leading, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack {
-                // Columna 1: Label = muy flexible
-                Text("Modo Foco")
+            // ← Aquí el cambio: primero el label
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Modo Foco:")
                     .foregroundColor(.white)
                     .font(.system(size: 22))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .layoutPriority(1)    // gana espacio si hay conflicto
+                    .padding(.top, 20)
+                    .padding(.leading, 12)
 
-                // Columna 2: Toggle = siempre ″corta″
-                Toggle("", isOn: $blockingEnabled)
-                    .labelsHidden()
-                    .toggleStyle(OrangeBorderToggleStyle())
-                    .onChange(of: blockingEnabled) { newValue in
-                        if !newValue {
-                            showDisablePinAlert = true
+                // luego en una línea aparte el toggle + estado
+                HStack {
+                    // toggle fijo
+                    Toggle("", isOn: $blockingEnabled)
+                        .labelsHidden()
+                        .toggleStyle(OrangeBorderToggleStyle())
+                        .fixedSize()
+                        .padding(.top, 10)
+                        .onChange(of: blockingEnabled) { newValue in
+                            if !newValue {
+                                showDisablePinAlert = true
+                            }
                         }
-                    }
-                    .frame(width: 60)     // fíjalo al ancho que quieras
 
-                // Columna 3: Estado = muy flexible
-                Text(blockingEnabled ? "Activado" : "Desactivado")
-                    .foregroundColor(.white)
-                    .font(.system(size: 20))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .layoutPriority(1)    // gana espacio si hay conflicto
+                    // texto de estado
+                    Text(blockingEnabled ? "Activado" : "Desactivado")
+                        .foregroundColor(.white)
+                        .font(.system(size: 20))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 0)
             }
-            .frame(maxWidth: .infinity)    // para ocupar todo el ancho padre
-            .padding(.horizontal, 6)
-            .padding(.vertical, 24)
 
-            
             Spacer()
 
-            // Page title
+            // resto de tu contenido…
             Text(pageTitle)
                 .font(.system(size: 22))
                 .foregroundColor(.accentOrange)
                 .padding(.bottom, 7)
                 .bold()
 
-            // Page selector
             HStack(spacing: 20) {
-                Button {
-                    if currentPage > 1 { currentPage -= 1 }
-                } label: {
+                Button { if currentPage > 1 { currentPage -= 1 } } label: {
                     Image(systemName: "chevron.left.circle.fill")
                         .font(.system(size: 30))
                         .foregroundColor(.accentOrange)
                 }
-
                 Text("\(currentPage)")
                     .font(.system(size: 40))
                     .foregroundColor(.white)
-
-                Button {
-                    if currentPage < maxPage { currentPage += 1 }
-                } label: {
+                Button { if currentPage < maxPage { currentPage += 1 } } label: {
                     Image(systemName: "chevron.right.circle.fill")
                         .font(.system(size: 30))
                         .foregroundColor(.accentOrange)
@@ -102,7 +97,6 @@ struct DrawerContent: View {
 
             Spacer()
         }
-        .padding(16)
         .background(Color.black.opacity(0.2))
         .cornerRadius(16)
         .overlay(
@@ -121,6 +115,7 @@ struct DrawerContent: View {
         }
     }
 }
+
 
 // MARK: - Custom App Bar
 struct NumbuXAppBar: View {
@@ -167,33 +162,35 @@ struct OrangeBorderToggleStyle: ToggleStyle {
         HStack {
             configuration.label
             Spacer()
+
             ZStack {
                 // the capsule – orange when on, black when off
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: 12)
                     .fill(configuration.isOn ? Color.accentOrange : Color.black)
                     .overlay(
-                        // fade the border out when on
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: 12)
                             .stroke(Color.accentOrange, lineWidth: 2)
                             .opacity(configuration.isOn ? 0 : 1)
                     )
-                    .frame(width: 50, height: 30)
 
                 // the knob – black when on, orange when off
                 Circle()
-                    .fill(configuration.isOn ? Color.black : Color.accentOrange)
-                    .frame(width: 26, height: 26)
-                    .offset(x: configuration.isOn ? 10 : -10)
-                    .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
-            }
-            .onTapGesture { configuration.isOn.toggle() }
+                        .fill(configuration.isOn ? Color.black : Color.accentOrange)
+                        .frame(width: 20, height: 20)
+                        // 42/2 = 21; 21 − (20/2) = 11; minus 2pt padding → 9
+                        .offset(x: configuration.isOn ?  9 : -9)
+                        .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
+                }
+                .frame(width: 42, height: 24)
+                .onTapGesture { configuration.isOn.toggle() }
         }
     }
-
-    // Tamaños de ejemplo; cámbialos a tu gusto
-    private let Fifty: CGFloat = 50
-    private let thirty: CGFloat = 30
 }
+
+
+// Tamaños de ejemplo; cámbialos a tu gusto
+private let Fifty: CGFloat = 50
+private let thirty: CGFloat = 30
 
 
 // MARK: - Main Content View
