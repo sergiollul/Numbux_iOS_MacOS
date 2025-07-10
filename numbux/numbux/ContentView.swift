@@ -28,7 +28,7 @@ struct DrawerContent: View {
                 .bold()
                 .foregroundColor(.accentOrange)
                 .padding(.top, 38)
-                .padding(.leading, 10)
+                .padding(.leading, 15)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // ← Aquí el cambio: primero el label
@@ -37,7 +37,7 @@ struct DrawerContent: View {
                     .foregroundColor(.white)
                     .font(.system(size: 23))
                     .padding(.top, 20)
-                    .padding(.leading, 12)
+                    .padding(.leading, 19)
 
                 // luego en una línea aparte el toggle + estado
                 HStack(alignment: .center, spacing: 12) {
@@ -54,43 +54,54 @@ struct DrawerContent: View {
                         .fixedSize(horizontal: true, vertical: false)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 9)
+                .padding(.leading, 16)
                 .padding(.top, 10)
             }
 
             Spacer()
 
-            // resto de tu contenido…
-            Text(pageTitle)
-                .font(.system(size: 22))
-                .foregroundColor(.accentOrange)
-                .padding(.bottom, 7)
-                .bold()
+            // ——— bottom center group ———
+            VStack(spacing: 8) {
+                // 1) Page title
+                Text(pageTitle)
+                    .font(.system(size: 22))
+                    .foregroundColor(.accentOrange)
+                    .bold()
 
-            HStack(spacing: 20) {
-                Button { if currentPage > 1 { currentPage -= 1 } } label: {
-                    Image(systemName: "chevron.left.circle.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(.accentOrange)
+                // 2) Page controls
+                HStack(spacing: 20) {
+                    Button {
+                        if currentPage > 1 { currentPage -= 1 }
+                    } label: {
+                        Image(systemName: "chevron.left.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.accentOrange)
+                    }
+
+                    Text("\(currentPage)")
+                        .font(.system(size: 40))
+                        .foregroundColor(.white)
+
+                    Button {
+                        if currentPage < maxPage { currentPage += 1 }
+                    } label: {
+                        Image(systemName: "chevron.right.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.accentOrange)
+                    }
                 }
-                Text("\(currentPage)")
-                    .font(.system(size: 40))
+
+                // 3) “Cambiar Herramienta”
+                Text("Cambiar Herramienta")
+                    .font(.system(size: 15))
                     .foregroundColor(.white)
-                Button { if currentPage < maxPage { currentPage += 1 } } label: {
-                    Image(systemName: "chevron.right.circle.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(.accentOrange)
-                }
             }
-            .padding(.bottom, 2)
+            .frame(maxWidth: .infinity)       // fill horizontally
+            .multilineTextAlignment(.center)  // center all text inside
+            .padding(.bottom, 16)             // some breathing room from bottom
 
-            Text("Cambiar Herramienta")
-                .font(.system(size: 15))
-                .foregroundColor(.white)
-
-            Spacer()
         }
-        .background(Color.black.opacity(0.2))
+        .background(Color.black.opacity(0.7))
         .cornerRadius(16)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
@@ -211,7 +222,7 @@ struct ContentView: View {
 
             // ─── Scrim + Drawer ───────────────────────────
             if isDrawerOpen {
-                Color.black.opacity(0.4)
+                Color.black.opacity(0.2)
                     .ignoresSafeArea()
                     .onTapGesture { withAnimation { closeDrawer() } }
 
