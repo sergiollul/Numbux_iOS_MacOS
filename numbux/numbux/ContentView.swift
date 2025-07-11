@@ -144,14 +144,13 @@ struct DrawerContent: View {
 
 
 // MARK: - Custom App Bar
-struct NumbuXAppBar: View {
-    @Binding var isDrawerOpen: Bool
-    let enabled: Bool
+    struct NumbuXAppBar: View {
+        @Binding var isDrawerOpen: Bool
+        let enabled: Bool
 
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            Text("")
+        var body: some View {
+            // No more full-screen Color here:
+            Text("")                               // just a placeholder for the toolbar
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -171,16 +170,15 @@ struct NumbuXAppBar: View {
                             .padding(.trailing, 6)
                     }
                 }
-        }
-        .accentColor(.white)
-        .onAppear {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+                .accentColor(.white)
+                .onAppear {
+                    let appearance = UINavigationBarAppearance()
+                    appearance.configureWithTransparentBackground()
+                    UINavigationBar.appearance().standardAppearance = appearance
+                    UINavigationBar.appearance().scrollEdgeAppearance  = appearance
+                }
         }
     }
-}
 
 /// Toggle con borde naranja, fondo negro y círculo naranja cuando está OFF
 struct OrangeBorderToggleStyle: ToggleStyle {
@@ -239,31 +237,33 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-            // ─── Main App ────────────────────────────
-            NavigationView {
-                VStack(spacing: 0) {
-                    NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: blockingEnabled)
-                    Spacer()
+                NavigationView {
+                    VStack(spacing: 0) {
+                        NumbuXAppBar(isDrawerOpen: $isDrawerOpen,
+                                     enabled: blockingEnabled)
 
-                    Group {
-                        switch currentPage {
-                        case 1:
-                            BasicCalculatorView()
-                        case 2:
-                            ScientificCalculatorView()
-                        case 3:
+                        if currentPage == 3 {
+                            // dictionary jumps straight under the nav-bar
                             dictionaryView
-                        default:
-                            EmptyView()
+                                .border(Color.red)        // see its actual frame
+                                .padding(.top, 0)
+                        } else {
+                            // pages 1 & 2 stay centered
+                            Spacer()
+
+                            if currentPage == 1 {
+                                BasicCalculatorView()
+                            } else {
+                                ScientificCalculatorView()
+                            }
+
+                            Spacer()
                         }
                     }
-
-                    Spacer()
+                    .background(Color.black.ignoresSafeArea())
+                    .navigationBarHidden(false)
                 }
-                .background(Color.black.ignoresSafeArea())
-                .navigationBarHidden(false)
-            }
-            .accentColor(.white)
+                .accentColor(.white)
 
             // ─── Scrim + Drawer ───────────────────────
             if isDrawerOpen {
@@ -413,4 +413,3 @@ struct ContentView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
     }
 }
-
