@@ -18,6 +18,14 @@ struct DrawerContent: View {
     @Binding var showDisablePinAlert: Bool
     @Binding var currentPage: Int
     let maxPage: Int
+    @State private var dictionaryText: String = ""
+    
+    // ── Dictionary state & pagination ────────────
+    @State private var dictionaryLines       = [String]()
+    @State private var dictPage: Int         = 0     // 0-based page index
+    private let linesPerPage: Int            = 10
+
+    
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -101,6 +109,7 @@ struct DrawerContent: View {
             .padding(.bottom, 16)             // some breathing room from bottom
 
         }
+        .onAppear(perform: loadDictionary)
         .background(Color.black.opacity(0.7))
         .cornerRadius(16)
         .overlay(
@@ -117,6 +126,19 @@ struct DrawerContent: View {
         case 3: return "Diccionario"
         default: return ""
         }
+    }
+    
+    private func loadDictionary() {
+        guard let url = Bundle.main.url(
+                forResource: "diccionario_latin_espanol",
+                withExtension: "txt"
+        ),
+        let raw = try? String(contentsOf: url, encoding: .utf8)
+        else {
+            dictionaryText = "⚠️ No pude cargar el diccionario."
+            return
+        }
+        dictionaryText = raw
     }
 }
 
@@ -198,21 +220,44 @@ private let thirty: CGFloat = 30
 
 // MARK: - Main Content View
 struct ContentView: View {
-    @State private var isDrawerOpen       = false
+    // ── Drawer & gesture state ───────────────────
+    @State private var isDrawerOpen        = false
     @State private var dragOffset: CGFloat = 0
-    @State private var blockingEnabled    = false
+    @State private var blockingEnabled     = false
     @State private var showDisablePinAlert = false
-    @State private var currentPage        = 1
-    private let maxPage                  = 3
+    @State private var currentPage         = 1
+    private let maxPage                   = 3
+
+    // ── Dictionary state ──────────────────────────
+    @State private var dictionaryText = ""
+    
+    @State private var dictionaryLines = [String]()
+    @State private var dictPage: Int   = 0
+    private let linesPerPage          = 10
+    
+    
 
     var body: some View {
         ZStack(alignment: .leading) {
-            // ─── Main App ─────────────────────────────────
+            // ─── Main App ────────────────────────────
             NavigationView {
                 VStack(spacing: 0) {
                     NumbuXAppBar(isDrawerOpen: $isDrawerOpen, enabled: blockingEnabled)
                     Spacer()
-                    BasicCalculatorView().padding()
+
+                    Group {
+                        switch currentPage {
+                        case 1:
+                            BasicCalculatorView()
+                        case 2:
+                            ScientificCalculatorView()
+                        case 3:
+                            dictionaryView
+                        default:
+                            EmptyView()
+                        }
+                    }
+
                     Spacer()
                 }
                 .background(Color.black.ignoresSafeArea())
@@ -220,7 +265,7 @@ struct ContentView: View {
             }
             .accentColor(.white)
 
-            // ─── Scrim + Drawer ───────────────────────────
+            // ─── Scrim + Drawer ───────────────────────
             if isDrawerOpen {
                 Color.black.opacity(0.2)
                     .ignoresSafeArea()
@@ -244,19 +289,20 @@ struct ContentView: View {
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(Color.accentOrange.opacity(0.8), lineWidth: 2)
                         )
-                        // → posición base + desplazamiento de gesto
                         .offset(x: -w + (isDrawerOpen ? w : 0) + dragOffset)
+
                         Spacer()
                     }
                 }
                 .ignoresSafeArea()
             }
         }
-        // ─── Gesto global de abrir/cerrar ───────────────
+        // ─── Load dictionary once on appear ─────────
+        .onAppear(perform: loadDictionary)
+        // ─── Global swipe gesture ───────────────────
         .highPriorityGesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onChanged { v in
-                    // si está abierto y arrastramos a la izquierda, movemos el panel
                     if isDrawerOpen && v.translation.width < 0 {
                         dragOffset = v.translation.width
                     }
@@ -266,37 +312,100 @@ struct ContentView: View {
                     let closeThreshold = -100.0
 
                     if !isDrawerOpen {
-                        // start from very left edge & swipe right → abrir
                         if v.startLocation.x < 30 && v.translation.width > openThreshold {
                             withAnimation(.easeInOut) {
                                 isDrawerOpen = true
-                                dragOffset = 0
+                                dragOffset   = 0
                             }
                         }
                     } else {
-                        // swipe left enough → cerrar
                         if v.translation.width < closeThreshold {
                             withAnimation(.easeInOut) { closeDrawer() }
                         } else {
-                            // si no llega al umbral, retrocede
                             withAnimation(.easeInOut) { dragOffset = 0 }
                         }
                     }
                 }
         )
+        // ─── Disable‐PIN alert ──────────────────────
         .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
             Button("Cancel", role: .cancel) { blockingEnabled = true }
             Button("OK")               { blockingEnabled = false }
         }
     }
 
+    // MARK: – Helpers
+
+    // The View that shows one “page” of lines plus Prev/Next controls
+    private var dictionaryView: some View {
+        VStack(spacing: 8) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(currentSlice, id: \.self) { line in
+                        Text(line)
+                            .foregroundColor(.white)
+                            .font(.system(size: 14, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding()
+            }
+
+            HStack {
+                Button(action: { if dictPage > 0 { dictPage -= 1 } }) {
+                    Image(systemName: "chevron.left")
+                }
+                .disabled(dictPage == 0)
+
+                Spacer()
+
+                Text("Página \(dictPage+1) de \(totalPages)")
+                    .foregroundColor(.accentOrange)
+
+                Spacer()
+
+                Button(action: { if dictPage < totalPages-1 { dictPage += 1 } }) {
+                    Image(systemName: "chevron.right")
+                }
+                .disabled(dictPage >= totalPages-1)
+            }
+            .padding(.horizontal, 16)
+            .foregroundColor(.white)
+        }
+    }
+
+    // 3) Helper to grab the correct slice of lines
+    private var currentSlice: [String] {
+        let start = dictPage * linesPerPage
+        let end   = min(start + linesPerPage, dictionaryLines.count)
+        return Array(dictionaryLines[start..<end])
+    }
+
+    // 4) Compute how many pages there are
+    private var totalPages: Int {
+        max(1, Int(ceil(Double(dictionaryLines.count) / Double(linesPerPage))))
+    }
+
+    // 5) Finally, tweak your loadDictionary() to fill dictionaryLines instead of dictionaryText:
+    private func loadDictionary() {
+        guard let asset = NSDataAsset(name: "DiccionarioLatinEspanol"),
+              let raw   = String(data: asset.data, encoding: .utf8)
+        else {
+            dictionaryLines = ["⚠️ No pude cargar el diccionario."]
+            return
+        }
+        dictionaryLines = raw
+            .components(separatedBy: .newlines)
+            .filter { !$0.isEmpty }
+    }
+    
+    
+
     private func closeDrawer() {
         isDrawerOpen = false
         dragOffset   = 0
     }
 }
-
-
     
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
