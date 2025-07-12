@@ -18,15 +18,7 @@ struct DrawerContent: View {
     @Binding var showDisablePinAlert: Bool
     @Binding var currentPage: Int
     let maxPage: Int
-    @State private var dictionaryText: String = ""
     
-    // ── Dictionary state & pagination ────────────
-    @State private var dictionaryLines       = [String]()
-    @State private var dictPage: Int         = 0     // 0-based page index
-    private let linesPerPage: Int            = 10
-
-    
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer().frame(height: 14)
@@ -109,7 +101,6 @@ struct DrawerContent: View {
             .padding(.bottom, 16)             // some breathing room from bottom
 
         }
-        .onAppear(perform: loadDictionary)
         .background(Color.black.opacity(0.7))
         .cornerRadius(16)
         .overlay(
@@ -126,19 +117,6 @@ struct DrawerContent: View {
         case 3: return "Diccionario"
         default: return ""
         }
-    }
-    
-    private func loadDictionary() {
-        guard let url = Bundle.main.url(
-                forResource: "diccionario_latin_espanol",
-                withExtension: "txt"
-        ),
-        let raw = try? String(contentsOf: url, encoding: .utf8)
-        else {
-            dictionaryText = "⚠️ No pude cargar el diccionario."
-            return
-        }
-        dictionaryText = raw
     }
 }
 
@@ -231,9 +209,7 @@ struct ContentView: View {
     
     @State private var dictionaryLines = [String]()
     @State private var dictPage: Int   = 0
-    private let linesPerPage          = 10
-    
-    
+    private let linesPerPage          = 30   
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -245,7 +221,6 @@ struct ContentView: View {
                         if currentPage == 3 {
                             // dictionary jumps straight under the nav-bar
                             dictionaryView
-                                .border(Color.red)        // see its actual frame
                                 .padding(.top, 0)
                         } else {
                             // pages 1 & 2 stay centered
