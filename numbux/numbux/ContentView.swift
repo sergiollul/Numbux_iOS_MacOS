@@ -215,6 +215,8 @@ struct ContentView: View {
     @State private var dictPage: Int   = 0
     private let linesPerPage          = 30
     
+    @FocusState private var searchFieldIsFocused: Bool
+    
     private var filteredLines: [String] {
       guard !debouncedSearchText.isEmpty else { return dictionaryLines }
       return dictionaryLines.filter {
@@ -334,6 +336,7 @@ struct ContentView: View {
             .foregroundColor(.white)
             .font(.system(size: 20))
             .autocorrectionDisabled(true)
+            .focused($searchFieldIsFocused)
             .onChange(of: searchText) { newValue in
               // debounceTask?.cancel()…
               // DispatchQueue.main.asyncAfter…
@@ -342,8 +345,15 @@ struct ContentView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 14)
         .background(
-          RoundedRectangle(cornerRadius: 8)
-            .fill(Color.white.opacity(0.1))
+           RoundedRectangle(cornerRadius: 8)
+             .fill(Color.white.opacity(0.1))
+         )
+         .overlay(
+           RoundedRectangle(cornerRadius: 8)
+             .stroke(
+               searchFieldIsFocused ? Color.accentOrange : Color.clear,
+               lineWidth: 2
+             )
         )
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 16)
@@ -354,7 +364,7 @@ struct ContentView: View {
             ForEach(currentSlice, id: \.self) { line in
               Text(line)
                 .foregroundColor(.white)
-                .font(.system(size: 14, design: .monospaced))
+                .font(.system(size: 18, design: .monospaced))
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
           }
