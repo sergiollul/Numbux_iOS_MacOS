@@ -325,19 +325,28 @@ struct ContentView: View {
     // The View that shows one “page” of lines plus Prev/Next controls
     private var dictionaryView: some View {
       VStack(spacing: 8) {
-        // — Search field with manual debounce —
-        TextField("Buscar palabra…", text: $searchText)
-          .textFieldStyle(RoundedBorderTextFieldStyle())
-          .padding(.horizontal)
-          .onChange(of: searchText) { newValue in
-            debounceTask?.cancel()
-            let task = DispatchWorkItem {
-              debouncedSearchText = newValue
-              dictPage = 0
+        // — Search field compacto con lupa —
+        HStack(spacing: 8) {
+          Image(systemName: "magnifyingglass")
+            .foregroundColor(.accentOrange)
+            .font(.system(size: 20))
+          TextField("Buscar palabra…", text: $searchText)
+            .foregroundColor(.white)
+            .font(.system(size: 20))
+            .autocorrectionDisabled(true)
+            .onChange(of: searchText) { newValue in
+              // debounceTask?.cancel()…
+              // DispatchQueue.main.asyncAfter…
             }
-            debounceTask = task
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
-          }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 14)
+        .background(
+          RoundedRectangle(cornerRadius: 8)
+            .fill(Color.white.opacity(0.1))
+        )
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 16)
 
         // — Paged, lazy list —
         ScrollView {
@@ -353,32 +362,26 @@ struct ContentView: View {
         }
 
         // — Page controls —
-          HStack {
-            // ← Previous Page
-            Button {
-              if dictPage > 0 { dictPage -= 1 }
-            } label: {
-              Image(systemName: "chevron.left")
-            }
-            .disabled(dictPage == 0)
-
-            Spacer()
-
-            Text("Página \(dictPage+1) de \(totalPages)")
-              .foregroundColor(.accentOrange)
-
-            Spacer()
-
-            // ← Next Page
-            Button {
-              if dictPage < totalPages - 1 { dictPage += 1 }
-            } label: {
-              Image(systemName: "chevron.right")
-            }
-            .disabled(dictPage >= totalPages - 1)
+        HStack {
+          Button { if dictPage > 0 { dictPage -= 1 } } label: {
+            Image(systemName: "chevron.left")
           }
-          .padding(.horizontal, 16)
-          .foregroundColor(.white)
+          .disabled(dictPage == 0)
+
+          Spacer()
+
+          Text("Página \(dictPage+1) de \(totalPages)")
+            .foregroundColor(.accentOrange)
+
+          Spacer()
+
+          Button { if dictPage < totalPages-1 { dictPage += 1 } } label: {
+            Image(systemName: "chevron.right")
+          }
+          .disabled(dictPage >= totalPages-1)
+        }
+        .padding(.horizontal, 16)
+        .foregroundColor(.white)
       }
     }
 
