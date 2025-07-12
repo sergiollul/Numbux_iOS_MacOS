@@ -206,10 +206,18 @@ struct ContentView: View {
 
     // ── Dictionary state ──────────────────────────
     @State private var dictionaryText = ""
+    @State private var searchText: String = ""
     
     @State private var dictionaryLines = [String]()
     @State private var dictPage: Int   = 0
-    private let linesPerPage          = 30   
+    private let linesPerPage          = 30
+    
+    private var filteredLines: [String] {
+        guard !searchText.isEmpty else { return dictionaryLines }
+        return dictionaryLines.filter {
+            $0.lowercased().contains(searchText.lowercased())
+        }
+    }
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -314,6 +322,11 @@ struct ContentView: View {
     // The View that shows one “page” of lines plus Prev/Next controls
     private var dictionaryView: some View {
         VStack(spacing: 8) {
+            // --- Campo de búsqueda ---
+            TextField("Buscar palabra…", text: $searchText)
+              .textFieldStyle(RoundedBorderTextFieldStyle())
+              .padding(.horizontal)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(currentSlice, id: \.self) { line in
@@ -352,16 +365,16 @@ struct ContentView: View {
     // 3) Helper to grab the correct slice of lines
     private var currentSlice: [String] {
         let start = dictPage * linesPerPage
-        let end   = min(start + linesPerPage, dictionaryLines.count)
-        return Array(dictionaryLines[start..<end])
+        let end   = min(start + linesPerPage, filteredLines.count)
+        return Array(filteredLines[start..<end])
     }
 
-    // 4) Compute how many pages there are
     private var totalPages: Int {
-        max(1, Int(ceil(Double(dictionaryLines.count) / Double(linesPerPage))))
+        max(1, Int(ceil(Double(filteredLines.count) / Double(linesPerPage))))
     }
 
-    // 5) Finally, tweak your loadDictionary() to fill dictionaryLines instead of dictionaryText:
+
+    // Finally, tweak your loadDictionary() to fill dictionaryLines instead of dictionaryText:
     private func loadDictionary() {
         guard let asset = NSDataAsset(name: "DiccionarioLatinEspanol"),
               let raw   = String(data: asset.data, encoding: .utf8)
