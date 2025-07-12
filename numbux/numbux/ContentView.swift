@@ -211,16 +211,25 @@ struct ContentView: View {
     @State private var debouncedSearchText: String = ""
     @State private var debounceTask: DispatchWorkItem?
     
-    @State private var dictionaryLines = [String]()
+    @State private var dictionaryEntries = [AttributedString]()
     @State private var dictPage: Int   = 0
     private let linesPerPage          = 30
     
     @FocusState private var searchFieldIsFocused: Bool
     
-    private var filteredLines: [String] {
-      guard !debouncedSearchText.isEmpty else { return dictionaryLines }
-      return dictionaryLines.filter {
-        $0.lowercased().contains(debouncedSearchText.lowercased())
+    private var filteredEntries: [AttributedString] {
+      guard !searchText.isEmpty else {
+        return dictionaryEntries
+      }
+      let lowerQuery = searchText.lowercased()
+      return dictionaryEntries.filter { entry in
+        // Turn the AttributedString into a plain String
+        let fullText = String(entry.characters).lowercased()
+        // Split on your arrow
+        let parts = fullText.components(separatedBy: "→")
+        // Take the first segment (the Latin word)
+        let latinPart = parts.first ?? ""
+        return latinPart.contains(lowerQuery)
       }
     }
 
@@ -406,14 +415,15 @@ struct ContentView: View {
     }
 
     // 3) Helper to grab the correct slice of lines
-    private var currentSlice: [String] {
+    private var currentSlice: [AttributedString] {
+        let base = filteredEntries
         let start = dictPage * linesPerPage
-        let end   = min(start + linesPerPage, filteredLines.count)
-        return Array(filteredLines[start..<end])
+        let end   = min(start + linesPerPage, base.count)
+        return Array(base[start..<end])
     }
 
     private var totalPages: Int {
-        max(1, Int(ceil(Double(filteredLines.count) / Double(linesPerPage))))
+        max(1, Int(ceil(Double(filteredEntries.count) / Double(linesPerPage))))
     }
 
     // Finally, tweak your loadDictionary() to fill dictionaryLines instead of dictionaryText:
@@ -421,15 +431,43 @@ struct ContentView: View {
         guard let asset = NSDataAsset(name: "DiccionarioLatinEspanol"),
               let raw   = String(data: asset.data, encoding: .utf8)
         else {
-            dictionaryLines = ["⚠️ No pude cargar el diccionario."]
+            dictionaryEntries = [AttributedString("⚠️ No pude cargar el diccionario.")]
             return
         }
-        dictionaryLines = raw
-            .components(separatedBy: .newlines)
-            .filter { !$0.isEmpty }
+
+        let lines = raw
+          .components(separatedBy: .newlines)
+          .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+
+        dictionaryEntries = lines.compactMap { rawLine in
+          // Split “latin: spanish”
+          let parts = rawLine.split(separator: ":", maxSplits: 1).map(String.init)
+          guard parts.count == 2 else { return nil }
+
+          let latinRaw  = parts[0].trimmingCharacters(in: .whitespaces)
+          let spanish   = parts[1].trimmingCharacters(in: .whitespaces)
+          var styled    = AttributedString("")
+
+          // If it doesn’t contain “. sin” we give the latinRaw a monospace/code style
+          if !latinRaw.contains(". sin") {
+            var latinAttr = AttributedString(latinRaw)
+            latinAttr.font            = .system(size: 18, design: .monospaced)
+            latinAttr.foregroundColor = .white
+            latinAttr.backgroundColor = .gray.opacity(0.5)
+            styled += latinAttr
+          } else {
+            styled += AttributedString(latinRaw)
+          }
+
+          // Then append arrow + spanish
+          var arrowAndSpanish = AttributedString(" → \(spanish)")
+          arrowAndSpanish.font            = .system(size: 18, design: .monospaced)
+          arrowAndSpanish.foregroundColor = .white
+          styled += arrowAndSpanish
+
+          return styled
+        }
     }
-    
-    
 
     private func closeDrawer() {
         isDrawerOpen = false
