@@ -328,22 +328,30 @@ struct ContentView: View {
     private var dictionaryView: some View {
       VStack(spacing: 8) {
         // — Search field compacto con lupa —
-        HStack(spacing: 8) {
-          Image(systemName: "magnifyingglass")
-            .foregroundColor(.accentOrange)
-            .font(.system(size: 20))
-          TextField("Buscar palabra…", text: $searchText)
-            .foregroundColor(.white)
-            .font(.system(size: 20))
-            .autocorrectionDisabled(true)
-            .focused($searchFieldIsFocused)
-            .onChange(of: searchText) { newValue in
-              // debounceTask?.cancel()…
-              // DispatchQueue.main.asyncAfter…
-            }
-            .accentColor(.accentOrange)  // para iOS 14–15
-            .tint(.accentOrange)         // para iOS 15+
-        }
+          HStack {
+            Image(systemName: "magnifyingglass")
+              .foregroundColor(.accentOrange)
+            TextField("Buscar palabra…", text: $searchText)
+              .foregroundColor(.white)
+              .font(.system(size: 20))
+              .autocorrectionDisabled(true)
+              .focused($searchFieldIsFocused)
+              .onChange(of: searchText) { newValue in
+                // 1) cancelo cualquier debounce en curso
+                debounceTask?.cancel()
+
+                // 2) creo una nueva tarea
+                let task = DispatchWorkItem {
+                  debouncedSearchText = newValue
+                  dictPage = 0
+                }
+                debounceTask = task
+
+                // 3) la programo a 0.3s
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: task)
+              }
+              .tint(.accentOrange)
+          }
         .padding(.horizontal, 10)
         .padding(.vertical, 14)
         .background(
