@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 // Custom accent color from hex #FF6300
 extension Color {
@@ -207,16 +208,18 @@ struct ContentView: View {
     // ── Dictionary state ──────────────────────────
     @State private var dictionaryText = ""
     @State private var searchText: String = ""
+    @State private var debouncedSearchText: String = ""
+    @State private var debounceTask: DispatchWorkItem?
     
     @State private var dictionaryLines = [String]()
     @State private var dictPage: Int   = 0
     private let linesPerPage          = 30
     
     private var filteredLines: [String] {
-        guard !searchText.isEmpty else { return dictionaryLines }
-        return dictionaryLines.filter {
-            $0.lowercased().contains(searchText.lowercased())
-        }
+      guard !debouncedSearchText.isEmpty else { return dictionaryLines }
+      return dictionaryLines.filter {
+        $0.lowercased().contains(debouncedSearchText.lowercased())
+      }
     }
 
     var body: some View {
@@ -321,45 +324,62 @@ struct ContentView: View {
 
     // The View that shows one “page” of lines plus Prev/Next controls
     private var dictionaryView: some View {
-        VStack(spacing: 8) {
-            // --- Campo de búsqueda ---
-            TextField("Buscar palabra…", text: $searchText)
-              .textFieldStyle(RoundedBorderTextFieldStyle())
-              .padding(.horizontal)
-            
-            ScrollView {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(currentSlice, id: \.self) { line in
-                        Text(line)
-                            .foregroundColor(.white)
-                            .font(.system(size: 14, design: .monospaced))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-                .padding()
+      VStack(spacing: 8) {
+        // — Search field with manual debounce —
+        TextField("Buscar palabra…", text: $searchText)
+          .textFieldStyle(RoundedBorderTextFieldStyle())
+          .padding(.horizontal)
+          .onChange(of: searchText) { newValue in
+            debounceTask?.cancel()
+            let task = DispatchWorkItem {
+              debouncedSearchText = newValue
+              dictPage = 0
             }
+            debounceTask = task
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
+          }
 
-            HStack {
-                Button(action: { if dictPage > 0 { dictPage -= 1 } }) {
-                    Image(systemName: "chevron.left")
-                }
-                .disabled(dictPage == 0)
-
-                Spacer()
-
-                Text("Página \(dictPage+1) de \(totalPages)")
-                    .foregroundColor(.accentOrange)
-
-                Spacer()
-
-                Button(action: { if dictPage < totalPages-1 { dictPage += 1 } }) {
-                    Image(systemName: "chevron.right")
-                }
-                .disabled(dictPage >= totalPages-1)
+        // — Paged, lazy list —
+        ScrollView {
+          LazyVStack(alignment: .leading, spacing: 4) {
+            ForEach(currentSlice, id: \.self) { line in
+              Text(line)
+                .foregroundColor(.white)
+                .font(.system(size: 14, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, 16)
-            .foregroundColor(.white)
+          }
+          .padding()
         }
+
+        // — Page controls —
+          HStack {
+            // ← Previous Page
+            Button {
+              if dictPage > 0 { dictPage -= 1 }
+            } label: {
+              Image(systemName: "chevron.left")
+            }
+            .disabled(dictPage == 0)
+
+            Spacer()
+
+            Text("Página \(dictPage+1) de \(totalPages)")
+              .foregroundColor(.accentOrange)
+
+            Spacer()
+
+            // ← Next Page
+            Button {
+              if dictPage < totalPages - 1 { dictPage += 1 }
+            } label: {
+              Image(systemName: "chevron.right")
+            }
+            .disabled(dictPage >= totalPages - 1)
+          }
+          .padding(.horizontal, 16)
+          .foregroundColor(.white)
+      }
     }
 
     // 3) Helper to grab the correct slice of lines
@@ -372,7 +392,6 @@ struct ContentView: View {
     private var totalPages: Int {
         max(1, Int(ceil(Double(filteredLines.count) / Double(linesPerPage))))
     }
-
 
     // Finally, tweak your loadDictionary() to fill dictionaryLines instead of dictionaryText:
     private func loadDictionary() {
