@@ -341,6 +341,8 @@ struct ContentView: View {
               // debounceTask?.cancel()…
               // DispatchQueue.main.asyncAfter…
             }
+            .accentColor(.accentOrange)  // para iOS 14–15
+            .tint(.accentOrange)         // para iOS 15+
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 14)
