@@ -61,8 +61,6 @@ struct ScientificCalculatorView: View {
                     }
                 }
             }
-            
-            Spacer()
         }
         .padding(16)
         .background(Color.black.edgesIgnoringSafeArea(.all))
