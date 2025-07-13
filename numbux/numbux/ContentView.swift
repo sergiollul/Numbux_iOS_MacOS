@@ -253,8 +253,6 @@ struct ContentView: View {
                             } else {
                                 ScientificCalculatorView()
                             }
-
-                            Spacer()
                         }
                     }
                     .background(Color.black.ignoresSafeArea())
