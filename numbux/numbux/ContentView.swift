@@ -259,6 +259,7 @@ struct ContentView: View {
                     .navigationBarHidden(false)
                 }
                 .accentColor(.white)
+                .navigationViewStyle(.stack) // esto es para los iPad funcione la app
 
             // ─── Scrim + Drawer ───────────────────────
             if isDrawerOpen {
