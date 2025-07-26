@@ -38,7 +38,7 @@ struct LoginView: View {
             }
             // Navigate after login validation and permission flow
             .navigationDestination(isPresented: $navigateToControl) {
-                ControlView()
+                TeacherPanelView()
                     .navigationBarBackButtonHidden(true)
                     .disableBackSwipe()
             }
@@ -156,15 +156,7 @@ private struct DisableBackSwipeHelper: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
-// MARK: - Placeholder ControlView
-
-struct ControlView: View {
-    var body: some View {
-        Text("🔧 Control Panel")
-            .font(.largeTitle)
-            .padding()
-    }
-}
+// Note: ControlView placeholder removed. Use TeacherPanelView.swift for controller role.
 
 // MARK: - Preview
 

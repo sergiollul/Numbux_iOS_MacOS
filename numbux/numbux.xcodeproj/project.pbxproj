@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0F06FFB12E3533BD009A2CD6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F06FFB02E3533B8009A2CD6 /* LoginView.swift */; };
+		0F06FFB32E353A7A009A2CD6 /* TeacherPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F06FFB22E353A74009A2CD6 /* TeacherPanelView.swift */; };
 		0F5102492E1D72BF00DE1126 /* numbuxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5102482E1D72BF00DE1126 /* numbuxApp.swift */; };
 		0F51024B2E1D72BF00DE1126 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F51024A2E1D72BF00DE1126 /* ContentView.swift */; };
 		0F51024D2E1D72C100DE1126 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F51024C2E1D72C100DE1126 /* Assets.xcassets */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		0F06FFB02E3533B8009A2CD6 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		0F06FFB22E353A74009A2CD6 /* TeacherPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeacherPanelView.swift; sourceTree = "<group>"; };
 		0F5102452E1D72BF00DE1126 /* numbux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = numbux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F5102482E1D72BF00DE1126 /* numbuxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numbuxApp.swift; sourceTree = "<group>"; };
 		0F51024A2E1D72BF00DE1126 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 		0F5102472E1D72BF00DE1126 /* numbux */ = {
 			isa = PBXGroup;
 			children = (
+				0F06FFB22E353A74009A2CD6 /* TeacherPanelView.swift */,
 				0F06FFB02E3533B8009A2CD6 /* LoginView.swift */,
 				0F5102482E1D72BF00DE1126 /* numbuxApp.swift */,
 				0F51024A2E1D72BF00DE1126 /* ContentView.swift */,
@@ -268,6 +271,7 @@
 			files = (
 				0F5102752E1FD90A00DE1126 /* ScientificCalculatorView.swift in Sources */,
 				0F51024B2E1D72BF00DE1126 /* ContentView.swift in Sources */,
+				0F06FFB32E353A7A009A2CD6 /* TeacherPanelView.swift in Sources */,
 				0F5102492E1D72BF00DE1126 /* numbuxApp.swift in Sources */,
 				0F06FFB12E3533BD009A2CD6 /* LoginView.swift in Sources */,
 				0F5102732E1D791D00DE1126 /* BasicCalculatorView.swift in Sources */,
