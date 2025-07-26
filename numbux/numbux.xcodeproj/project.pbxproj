@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F06FFB12E3533BD009A2CD6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F06FFB02E3533B8009A2CD6 /* LoginView.swift */; };
 		0F5102492E1D72BF00DE1126 /* numbuxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5102482E1D72BF00DE1126 /* numbuxApp.swift */; };
 		0F51024B2E1D72BF00DE1126 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F51024A2E1D72BF00DE1126 /* ContentView.swift */; };
 		0F51024D2E1D72C100DE1126 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F51024C2E1D72C100DE1126 /* Assets.xcassets */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F06FFB02E3533B8009A2CD6 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		0F5102452E1D72BF00DE1126 /* numbux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = numbux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F5102482E1D72BF00DE1126 /* numbuxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numbuxApp.swift; sourceTree = "<group>"; };
 		0F51024A2E1D72BF00DE1126 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 		0F5102472E1D72BF00DE1126 /* numbux */ = {
 			isa = PBXGroup;
 			children = (
+				0F06FFB02E3533B8009A2CD6 /* LoginView.swift */,
 				0F5102482E1D72BF00DE1126 /* numbuxApp.swift */,
 				0F51024A2E1D72BF00DE1126 /* ContentView.swift */,
 				0F51024C2E1D72C100DE1126 /* Assets.xcassets */,
@@ -266,6 +269,7 @@
 				0F5102752E1FD90A00DE1126 /* ScientificCalculatorView.swift in Sources */,
 				0F51024B2E1D72BF00DE1126 /* ContentView.swift in Sources */,
 				0F5102492E1D72BF00DE1126 /* numbuxApp.swift in Sources */,
+				0F06FFB12E3533BD009A2CD6 /* LoginView.swift in Sources */,
 				0F5102732E1D791D00DE1126 /* BasicCalculatorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,11 +432,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.01;
 				DEVELOPMENT_ASSET_PATHS = "\"numbux/Preview Content\"";
 				DEVELOPMENT_TEAM = 9NC2S6B3KU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSEncryptionExportComplianceCode = No;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -442,7 +448,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.01;
 				PRODUCT_BUNDLE_IDENTIFIER = com.numbux;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -457,11 +463,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.01;
 				DEVELOPMENT_ASSET_PATHS = "\"numbux/Preview Content\"";
 				DEVELOPMENT_TEAM = 9NC2S6B3KU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSEncryptionExportComplianceCode = No;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -471,7 +479,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.01;
 				PRODUCT_BUNDLE_IDENTIFIER = com.numbux;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
