@@ -63,12 +63,12 @@ struct TeacherPanelView: View {
                         // Original "Modo Foco" switch row
                         HStack {
                             Text("Sergio Sánchez - ES1212")
-                            Spacer()
+                                .layoutPriority(1)
                             Toggle("", isOn: $remoteEnabled)
-                                .labelsHidden()
+                                .toggleStyle(OrangeBorderToggleStyle())
+                            Spacer()
                         }
                         .foregroundColor(.white)
-                        .padding(.horizontal)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             showDialog = true
@@ -107,11 +107,10 @@ struct TeacherPanelView: View {
                             ForEach(dummyStates.indices, id: \.self) { index in
                                 HStack {
                                     Text("Alumno - ES12\(index + 13)")
-                                    Spacer()
                                     Toggle("", isOn: $dummyStates[index])
-                                        .labelsHidden()
+                                        .toggleStyle(OrangeBorderToggleStyle())
+                                    Spacer()
                                 }
-                                .padding(.horizontal)
                                 .foregroundColor(.white)
                             }
                         }
