@@ -13,28 +13,35 @@ struct LoginView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                Text("Introduce tu usuario")
-                    .font(.headline)
+            ZStack {
+                // ◀︎ Black background
+                Color.black
+                    .ignoresSafeArea()
 
-                TextField("Clave de acceso", text: $credential)
-                    .textFieldStyle(.roundedBorder)
+                VStack(spacing: 16) {
+                    Text("Introduce tu usuario")
+                        .foregroundColor(.white)
+                        .font(.system(size: 24, weight: .bold))
 
-                if let error = error {
-                    Text(error)
-                        .foregroundColor(.red)
+                    TextField("Clave de acceso", text: $credential)
+                        .textFieldStyle(.roundedBorder)
+
+                    if let error = error {
+                        Text(error)
+                            .foregroundColor(.accentOrange)
+                            .bold()
+                    }
+
+                    Button("Entrar") {
+                        handleLogin()
+                    }
+                    .buttonStyle(AccentOrangeButtonStyle())
                 }
-
-                Button("Entrar") {
-                    handleLogin()
+                .padding(24)
+                .padding(.bottom, keyboardHeight)
+                .onAppear {
+                    observeKeyboard()
                 }
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
-            }
-            .padding(24)
-            .padding(.bottom, keyboardHeight)
-            .onAppear {
-                observeKeyboard()
             }
             // Navigate after login validation and permission flow
             .navigationDestination(isPresented: $navigateToControl) {
@@ -58,6 +65,7 @@ struct LoginView: View {
             }
         }
     }
+    
 
     // MARK: - Login Logic
 
@@ -156,7 +164,32 @@ private struct DisableBackSwipeHelper: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
-// Note: ControlView placeholder removed. Use TeacherPanelView.swift for controller role.
+/// A button style whose normal state is an orange fill with black text,
+/// and whose pressed state is a clear background with orange text.
+struct AccentOrangeButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            // switch text color based on pressed state
+            .foregroundColor(configuration.isPressed ? .accentOrange : .black)
+            .font(.system(size: 18, weight: .semibold))
+            .padding(.vertical, 12)
+            .frame(width: UIScreen.main.bounds.width * 0.65)
+            // switch background fill based on pressed state
+            .background(
+                Group {
+                    if configuration.isPressed {
+                        Color.clear
+                    } else {
+                        Color.accentOrange
+                    }
+                }
+            )
+            .cornerRadius(8)
+            // subtle scale feedback
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+    }
+}
+
 
 // MARK: - Preview
 
