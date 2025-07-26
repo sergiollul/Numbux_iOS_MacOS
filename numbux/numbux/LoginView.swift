@@ -6,7 +6,7 @@ struct LoginView: View {
     @AppStorage("role") private var role: String?
     @State private var credential: String = ""
     @State private var error: String? = nil
-    @State private var showPermissionDialog: Bool = false // Only show after successful student login
+    @State private var showPermissionDialog: Bool = false
     @State private var navigateToControl: Bool = false
     @State private var navigateToMain: Bool = false
     @State private var keyboardHeight: CGFloat = 0
@@ -39,9 +39,13 @@ struct LoginView: View {
             // Navigate after login validation and permission flow
             .navigationDestination(isPresented: $navigateToControl) {
                 ControlView()
+                    .navigationBarBackButtonHidden(true)
+                    .disableBackSwipe()
             }
             .navigationDestination(isPresented: $navigateToMain) {
-                ContentView()    // Navigate to your main calculator view
+                ContentView()
+                    .navigationBarBackButtonHidden(true)
+                    .disableBackSwipe()
             }
             // Alert for notification permission, triggered only for students
             .alert("Permitir notificaciones?", isPresented: $showPermissionDialog) {
@@ -59,13 +63,15 @@ struct LoginView: View {
 
     private func handleLogin() {
         let trimmed = credential.trimmingCharacters(in: .whitespacesAndNewlines)
-        switch trimmed {
+        switch trimmed.lowercased() {
         case "profesor1234":
+            error = nil
             role = "controller"
             navigateToControl = true
-        case "Estudiante1234":
+        case "estudiante1234":
+            error = nil
             role = "student"
-            checkNotificationPermission() // Trigger permission flow only on valid student login
+            checkNotificationPermission()
         default:
             error = "Credenciales incorrectas"
         }
@@ -76,16 +82,13 @@ struct LoginView: View {
     private func checkNotificationPermission() {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             DispatchQueue.main.async {
-                switch settings.authorizationStatus {
-                case .notDetermined:
-                    // Show custom dialog once before requesting system prompt
+                if settings.authorizationStatus == .notDetermined {
                     if !UserDefaults.standard.bool(forKey: "notif_dialog_shown") {
                         showPermissionDialog = true
                     } else {
                         requestNotificationPermission()
                     }
-                default:
-                    // Already granted or denied – proceed to main view
+                } else {
                     navigateToMain = true
                 }
             }
@@ -126,6 +129,33 @@ struct LoginView: View {
     }
 }
 
+// MARK: - Back Swipe Disabler
+
+extension View {
+    /// Hides the back button and disables the interactive swipe-back gesture
+    func disableBackSwipe() -> some View {
+        modifier(DisableBackSwipe())
+    }
+}
+
+struct DisableBackSwipe: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .background(DisableBackSwipeHelper())
+    }
+}
+
+private struct DisableBackSwipeHelper: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        let controller = UIViewController()
+        DispatchQueue.main.async {
+            controller.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        }
+        return controller
+    }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
 // MARK: - Placeholder ControlView
 
 struct ControlView: View {
@@ -133,7 +163,6 @@ struct ControlView: View {
         Text("🔧 Control Panel")
             .font(.largeTitle)
             .padding()
-            .navigationBarBackButtonHidden(true)
     }
 }
 
