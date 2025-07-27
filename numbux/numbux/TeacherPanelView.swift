@@ -1,4 +1,9 @@
 import SwiftUI
+import Firebase
+import FirebaseCore
+import FirebaseDatabase
+import Combine
+
 
 struct AccentOrangeButtonStyle_teacher: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -19,11 +24,10 @@ struct AccentOrangeButtonStyle_teacher: ButtonStyle {
 
 /// A SwiftUI view for the Teacher Panel, matching the Android Compose layout.
 struct TeacherPanelView: View {
+    @StateObject private var focusVM = FocusSyncViewModel()
+    
     // Drawer state (if needed later)
     @State private var isDrawerOpen = false
-    
-    // Master toggle persisted in UserDefaults
-    @AppStorage("blocking_enabled") private var remoteEnabled = false
     
     // PIN dialog state
     @State private var showDialog = false
@@ -46,13 +50,13 @@ struct TeacherPanelView: View {
                         // Master ON/OFF buttons
                         HStack(spacing: 16) {
                             Button("Desactivar") {
-                                remoteEnabled = false
+                                focusVM.isFocusModeOn = false
                                 dummyStates = Array(repeating: false, count: dummyStates.count)
                             }
                             .buttonStyle(AccentOrangeButtonStyle_teacher())
 
                             Button("Activar") {
-                                remoteEnabled = true
+                                focusVM.isFocusModeOn = true
                                 dummyStates = Array(repeating: true, count: dummyStates.count)
                             }
                             .buttonStyle(AccentOrangeButtonStyle_teacher())
@@ -66,7 +70,7 @@ struct TeacherPanelView: View {
                             Text("Sergio Sánchez - ES1212")
                                 .layoutPriority(1)
                                 .font(.system(size: 19))
-                            Toggle("", isOn: $remoteEnabled)
+                            Toggle("", isOn: $focusVM.isFocusModeOn)
                                 .toggleStyle(OrangeBorderToggleStyle())
                             Spacer()
                         }

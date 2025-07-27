@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseCore
+import FirebaseDatabase
+import Combine
 
 @main
-struct numbuxApp: App {
-    var body: some Scene {
-        WindowGroup {
-            LoginView()
-        }
+struct NumbuXApp: App {
+  init() {
+    FirebaseApp.configure()
+  }
+  var body: some Scene {
+    WindowGroup {
+      LoginView()
     }
+  }
 }

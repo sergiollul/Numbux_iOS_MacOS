@@ -7,6 +7,10 @@
 
 import SwiftUI
 import Combine
+import Firebase
+import FirebaseCore
+import FirebaseDatabase
+import Combine
 
 // Custom accent color from hex #FF6300
 extension Color {
@@ -198,9 +202,9 @@ private let thirty: CGFloat = 30
 // MARK: - Main Content View
 struct ContentView: View {
     // ── Drawer & gesture state ───────────────────
+    @StateObject private var focusVM = FocusSyncViewModel()
     @State private var isDrawerOpen        = false
     @State private var dragOffset: CGFloat = 0
-    @State private var blockingEnabled     = false
     @State private var showDisablePinAlert = false
     @State private var currentPage         = 1
     private let maxPage                   = 3
@@ -237,8 +241,10 @@ struct ContentView: View {
         ZStack(alignment: .leading) {
                 NavigationView {
                     VStack(spacing: 0) {
-                        NumbuXAppBar(isDrawerOpen: $isDrawerOpen,
-                                     enabled: blockingEnabled)
+                        NumbuXAppBar(
+                            isDrawerOpen: $isDrawerOpen,
+                            enabled: focusVM.isFocusModeOn
+                        )
 
                         if currentPage == 3 {
                             // dictionary jumps straight under the nav-bar
@@ -273,11 +279,12 @@ struct ContentView: View {
 
                     HStack(spacing: 0) {
                         DrawerContent(
-                            blockingEnabled: $blockingEnabled,
+                            blockingEnabled: $focusVM.isFocusModeOn,
                             showDisablePinAlert: $showDisablePinAlert,
                             currentPage: $currentPage,
                             maxPage: maxPage
                         )
+
                         .frame(width: w, height: h)
                         .background(Color.black.opacity(0.2))
                         .cornerRadius(16)
@@ -324,10 +331,10 @@ struct ContentView: View {
                 }
         )
         // ─── Disable‐PIN alert ──────────────────────
-        .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
-            Button("Cancel", role: .cancel) { blockingEnabled = true }
-            Button("OK")               { blockingEnabled = false }
-        }
+        //.alert("Disable PIN?", isPresented: $showDisablePinAlert) {
+          //  Button("Cancel", role: .cancel) { blockingEnabled = true }
+          //  Button("OK")               { blockingEnabled = false }
+        //}
     }
 
     // MARK: – Helpers
