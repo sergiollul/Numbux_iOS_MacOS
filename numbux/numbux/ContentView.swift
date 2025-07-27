@@ -45,17 +45,31 @@ struct DrawerContent: View {
                     .padding(.leading, 19)
 
                 // luego en una línea aparte el toggle + estado
+                // build a Binding that intercepts “off” to show the PIN alert
+                let focusBinding = Binding<Bool>(
+                    get: { blockingEnabled },
+                    set: { newVal in
+                        if newVal {
+                            // turning on immediately
+                            blockingEnabled = true
+                        } else {
+                            // turning off → ask for PIN
+                            showDisablePinAlert = true
+                        }
+                    }
+                )
+
                 HStack(alignment: .center, spacing: 12) {
-                    Toggle("", isOn: $blockingEnabled)
+                    Toggle("", isOn: focusBinding)
                         .labelsHidden()
                         .toggleStyle(OrangeBorderToggleStyle())
-                        .frame(width: 42, height: 24)    // same size as your style
-                        .fixedSize()                     // guard against unexpected stretching
+                        .frame(width: 42, height: 24)
+                        .fixedSize()
 
                     Text(blockingEnabled ? "Activado" : "Desactivado")
                         .foregroundColor(.white)
                         .font(.system(size: 19))
-                        .frame(height: 24)              // match the toggle’s height
+                        .frame(height: 24)
                         .fixedSize(horizontal: true, vertical: false)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -101,10 +115,9 @@ struct DrawerContent: View {
                     .font(.system(size: 15))
                     .foregroundColor(.white)
             }
-            .frame(maxWidth: .infinity)       // fill horizontally
-            .multilineTextAlignment(.center)  // center all text inside
-            .padding(.bottom, 16)             // some breathing room from bottom
-
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
+            .padding(.bottom, 16)
         }
         .background(Color.black.opacity(0.7))
         .cornerRadius(16)
@@ -331,10 +344,10 @@ struct ContentView: View {
                 }
         )
         // ─── Disable‐PIN alert ──────────────────────
-        //.alert("Disable PIN?", isPresented: $showDisablePinAlert) {
-          //  Button("Cancel", role: .cancel) { blockingEnabled = true }
-          //  Button("OK")               { blockingEnabled = false }
-        //}
+        .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
+            Button("Cancel", role: .cancel) { focusVM.isFocusModeOn = true }
+            Button("OK")               { focusVM.isFocusModeOn = false }
+        }
     }
 
     // MARK: – Helpers
