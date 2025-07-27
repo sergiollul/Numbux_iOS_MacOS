@@ -113,9 +113,15 @@ struct TeacherPanelView: View {
                 }
                 .accentColor(.white)
                 .onAppear {
-                    // Make navigation bar transparent so the black shows through
                     let appearance = UINavigationBarAppearance()
-                    appearance.configureWithTransparentBackground()
+                    // Make it opaque:
+                    appearance.configureWithOpaqueBackground()
+                    // Give it a pure black fill
+                    appearance.backgroundColor = UIColor.black
+                    // Ensure title text (and our custom leading Text) stays white
+                    appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+                    appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+
                     UINavigationBar.appearance().standardAppearance = appearance
                     UINavigationBar.appearance().scrollEdgeAppearance = appearance
                 }
