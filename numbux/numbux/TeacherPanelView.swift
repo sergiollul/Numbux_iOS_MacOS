@@ -31,15 +31,15 @@ struct TeacherPanelView: View {
     @State private var showSecret = false
     
     // Dummy student toggles
-    @State private var dummyStates = Array(repeating: false, count: 15)
+    @State private var dummyStates = Array(repeating: false, count: 20)
     
     var body: some View {
         ZStack {
             // 1) Fill the entire screen with black
             Color.black
                 .ignoresSafeArea()
-            
-            // 2) Put your navigation & content on top
+
+            // 2) Your main navigation & content
             NavigationStack {
                 ScrollView {
                     VStack(spacing: 16) {
@@ -58,12 +58,14 @@ struct TeacherPanelView: View {
                             .buttonStyle(AccentOrangeButtonStyle_teacher())
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
+                        .padding(.top, 16)
+                        .padding(.bottom, 10)
 
                         // Original "Modo Foco" switch row
                         HStack {
                             Text("Sergio Sánchez - ES1212")
                                 .layoutPriority(1)
+                                .font(.system(size: 19))
                             Toggle("", isOn: $remoteEnabled)
                                 .toggleStyle(OrangeBorderToggleStyle())
                             Spacer()
@@ -74,39 +76,12 @@ struct TeacherPanelView: View {
                             showDialog = true
                         }
 
-                        // PIN AlertDialog
-                        if showDialog {
-                            Color.black.opacity(0.4)
-                                .ignoresSafeArea()
-                                .overlay(
-                                    VStack(spacing: 16) {
-                                        Text("PIN para Sergio Sánchez:")
-                                            .font(.headline)
-
-                                        Text(showSecret ? secretText : String(repeating: "*", count: secretText.count))
-                                            .font(.system(.body, design: .monospaced))
-
-                                        HStack {
-                                            Button("Cerrar") {
-                                                showDialog = false
-                                            }
-                                            Spacer()
-                                            Button(showSecret ? "Ocultar" : "Mostrar") {
-                                                showSecret.toggle()
-                                            }
-                                        }
-                                    }
-                                    .padding()
-                                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(white: 0.2)))
-                                    .padding(40)
-                                )
-                        }
-
                         // Dummy student switch rows
                         VStack(spacing: 12) {
                             ForEach(dummyStates.indices, id: \.self) { index in
                                 HStack {
                                     Text("Alumno - ES12\(index + 13)")
+                                        .font(.system(size: 19))
                                     Toggle("", isOn: $dummyStates[index])
                                         .toggleStyle(OrangeBorderToggleStyle())
                                     Spacer()
@@ -115,21 +90,19 @@ struct TeacherPanelView: View {
                             }
                         }
                     }
-                    .padding(24)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 0)
+                    //.padding(24)
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            isDrawerOpen.toggle()
-                        } label: {
-                            Image(systemName: "line.horizontal.3")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(isDrawerOpen ? .accentOrange : .white)
-                                .padding(.leading, 18)
+                            Text("Panel del Profesor")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
+                                .padding(.leading, 10)
                         }
-                    }
+                    
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Image("logo_blanco_numbux")
                             .resizable()
@@ -147,7 +120,43 @@ struct TeacherPanelView: View {
                     UINavigationBar.appearance().scrollEdgeAppearance = appearance
                 }
             }
+
+            // 3) Full‑screen PIN overlay above everything else
+            if showDialog {
+                // Dimmed backdrop
+                Color.black.opacity(0.8)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                    .zIndex(1)
+
+                // Dialog box
+                VStack(spacing: 16) {
+                    Text("PIN para Sergio Sánchez:")
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    Text(showSecret ? secretText : String(repeating: "*", count: secretText.count))
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.white)
+
+                    HStack {
+                        Button("Cerrar") {
+                            showDialog = false
+                        }.foregroundColor(.accentOrange)
+                        Spacer()
+                        Button(showSecret ? "Ocultar" : "Mostrar") {
+                            showSecret.toggle()
+                        }.foregroundColor(.accentOrange)
+                    }
+                }
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 12).fill(Color.black))
+                .padding(40)
+                .transition(.scale)
+                .zIndex(2)
+            }
         }
+        .animation(.easeInOut(duration: 0.2), value: showDialog)
     }
 }
 
