@@ -10,6 +10,7 @@ struct LoginView: View {
     @State private var navigateToControl: Bool = false
     @State private var navigateToMain: Bool = false
     @State private var keyboardHeight: CGFloat = 0
+    @FocusState private var isFieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -25,6 +26,14 @@ struct LoginView: View {
 
                     TextField("Clave de acceso", text: $credential)
                         .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 20))
+                        .focused($isFieldFocused)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(isFieldFocused ? Color.accentOrange : Color.gray.opacity(0.5),
+                                        lineWidth: isFieldFocused ? 2 : 1)
+                        )
+                        .animation(.easeInOut(duration: 0.2), value: isFieldFocused)
 
                     if let error = error {
                         Text(error)
@@ -38,7 +47,7 @@ struct LoginView: View {
                     .buttonStyle(AccentOrangeButtonStyle())
                 }
                 .padding(24)
-                .padding(.bottom, keyboardHeight)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
                 .onAppear {
                     observeKeyboard()
                 }
