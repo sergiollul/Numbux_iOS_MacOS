@@ -234,6 +234,10 @@ struct ContentView: View {
     
     @FocusState private var searchFieldIsFocused: Bool
     
+    @State private var pinInput    = ""
+    @State private var pinError    = false
+    private let correctPin = "1234"
+    
     private var filteredEntries: [AttributedString] {
       guard !searchText.isEmpty else {
         return dictionaryEntries
@@ -252,33 +256,33 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-                NavigationView {
-                    VStack(spacing: 0) {
-                        NumbuXAppBar(
-                            isDrawerOpen: $isDrawerOpen,
-                            enabled: focusVM.isFocusModeOn
-                        )
+            NavigationView {
+                VStack(spacing: 0) {
+                    NumbuXAppBar(
+                        isDrawerOpen: $isDrawerOpen,
+                        enabled: focusVM.isFocusModeOn
+                    )
 
-                        if currentPage == 3 {
-                            // dictionary jumps straight under the nav-bar
-                            dictionaryView
-                                .padding(.top, 0)
+                    if currentPage == 3 {
+                        // dictionary jumps straight under the nav-bar
+                        dictionaryView
+                            .padding(.top, 0)
+                    } else {
+                        // pages 1 & 2 stay centered
+                        Spacer()
+
+                        if currentPage == 1 {
+                            BasicCalculatorView()
                         } else {
-                            // pages 1 & 2 stay centered
-                            Spacer()
-
-                            if currentPage == 1 {
-                                BasicCalculatorView()
-                            } else {
-                                ScientificCalculatorView()
-                            }
+                            ScientificCalculatorView()
                         }
                     }
-                    .background(Color.black.ignoresSafeArea())
-                    .navigationBarHidden(false)
                 }
-                .accentColor(.white)
-                .navigationViewStyle(.stack) // esto es para los iPad funcione la app
+                .background(Color.black.ignoresSafeArea())
+                .navigationBarHidden(false)
+            }
+            .accentColor(.white)
+            .navigationViewStyle(.stack)
 
             // ─── Scrim + Drawer ───────────────────────
             if isDrawerOpen {
@@ -297,7 +301,6 @@ struct ContentView: View {
                             currentPage: $currentPage,
                             maxPage: maxPage
                         )
-
                         .frame(width: w, height: h)
                         .background(Color.black.opacity(0.2))
                         .cornerRadius(16)
@@ -311,6 +314,71 @@ struct ContentView: View {
                     }
                 }
                 .ignoresSafeArea()
+            }
+
+            // ─── PIN‐entry overlay ────────────────────
+            if showDisablePinAlert {
+                // Dimmed backdrop
+                Color.black.opacity(0.8)
+                    .ignoresSafeArea()
+                    .zIndex(1)
+
+                // PIN dialog
+                VStack(spacing: 16) {
+                    Text("Introduce PIN para desactivar Modo Foco")
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    SecureField("PIN", text: $pinInput)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+
+                    if pinError {
+                        Text("PIN incorrecto")
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+
+                    HStack {
+                        Button("Cancelar") {
+                            // Revert to ON and hide overlay
+                            focusVM.isFocusModeOn = true
+                            showDisablePinAlert = false
+                            pinInput = ""
+                            pinError = false
+                        }
+                        .foregroundColor(.accentOrange)
+
+                        Spacer()
+
+                        Button("OK") {
+                            if pinInput == correctPin {
+                                // Correct PIN: disable focus mode
+                                focusVM.isFocusModeOn = false
+                                showDisablePinAlert = false
+                                pinInput = ""
+                                pinError = false
+                            } else {
+                                // Wrong PIN: show error
+                                pinError = true
+                            }
+                        }
+                        .foregroundColor(.accentOrange)
+                    }
+                    .padding(.horizontal)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.accentOrange, lineWidth: 2)
+                        )
+                )
+                .padding(40)
+                .zIndex(2)
             }
         }
         // ─── Load dictionary once on appear ─────────
@@ -343,11 +411,6 @@ struct ContentView: View {
                     }
                 }
         )
-        // ─── Disable‐PIN alert ──────────────────────
-        .alert("Disable PIN?", isPresented: $showDisablePinAlert) {
-            Button("Cancel", role: .cancel) { focusVM.isFocusModeOn = true }
-            Button("OK")               { focusVM.isFocusModeOn = false }
-        }
     }
 
     // MARK: – Helpers
