@@ -95,33 +95,49 @@ struct BasicCalculatorView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 14) {
-            // Display with blinking cursor
-            BlinkingCursorField(text: $text)
-                .frame(height: 50)
-                .padding(.horizontal, 16)
+      VStack(spacing: 14) {
+        // ── Display + Backspace ───────────────────
+        BlinkingCursorField(text: $text)
+          .frame(height: 50)
+          .padding(.horizontal, 16)
 
-            // Divider separator
-            Divider()
-                .background(Color.white.opacity(0.25))
-                .frame(height: 2)
-                .padding(.horizontal, 16)
-
-            Spacer().frame(height: 30)
-
-            // Keypad rows
-            ForEach(buttons, id: \.self) { row in
-                HStack(spacing: 8) {
-                    ForEach(row, id: \.self) { label in
-                        CalculatorButton(label: label) {
-                            handlePress(label)
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-            }
+        // Backspace button, aligned right
+        HStack {
+          Spacer()
+          Button {
+            guard !text.isEmpty else { return }
+            text.removeLast()
+          } label: {
+            Image(systemName: "delete.left")
+              .font(.system(size: 28))
+              .foregroundColor(.accentOrange)
+          }
+          .buttonStyle(.plain)
+          .frame(width: 50, height: 50)
         }
-        .background(Color.black)
+        .padding(.horizontal, 16)
+
+        // Divider
+        Divider()
+          .background(Color.white.opacity(0.25))
+          .frame(height: 2)
+          .padding(.horizontal, 16)
+
+        Spacer().frame(height: 30)
+
+        // ── Keypad ────────────────────────────────
+        ForEach(buttons, id: \.self) { row in
+          HStack(spacing: 8) {
+            ForEach(row, id: \.self) { label in
+              CalculatorButton(label: label) {
+                handlePress(label)
+              }
+            }
+          }
+          .padding(.horizontal, 16)
+        }
+      }
+      .background(Color.black)
     }
 
     private func handlePress(_ label: String) {

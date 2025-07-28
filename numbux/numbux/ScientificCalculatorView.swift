@@ -18,20 +18,12 @@ struct ScientificCalculatorView: View {
     var body: some View {
         VStack(spacing: 16) {
             // ── Input Field ────────────────────
-            TextField("", text: $input)
+            BlinkingCursorField(text: $input)
                 .font(.system(size: 36, weight: .medium, design: .monospaced))
-                .foregroundColor(.white)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 8)
-                .background(Color(.darkGray))
+                .background(Color.clear)
                 .cornerRadius(8)
-                .keyboardType(.numbersAndPunctuation)
-                .focused($isFocused)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        isFocused = true
-                    }
-                }
             
             // ── Backspace ──────────────────────
             HStack {
