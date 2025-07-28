@@ -11,6 +11,7 @@ struct LoginView: View {
     @State private var navigateToMain: Bool = false
     @State private var keyboardHeight: CGFloat = 0
     @FocusState private var isFieldFocused: Bool
+    @State private var showDisclaimer: Bool = true
 
     var body: some View {
         NavigationStack {
@@ -51,6 +52,14 @@ struct LoginView: View {
                 .onAppear {
                     observeKeyboard()
                 }
+                // cuando showDisclaimer sea true,
+                // difumina y deshabilita la interacción
+                .blur(radius: showDisclaimer ? 3 : 0)
+                .disabled(showDisclaimer)
+            // fullScreenCover para el disclaimer
+            .fullScreenCover(isPresented: $showDisclaimer) {
+                DisclaimerView(isPresented: $showDisclaimer)
+            }
             }
             // Navigate after login validation and permission flow
             .navigationDestination(isPresented: $navigateToControl) {
@@ -198,6 +207,58 @@ struct AccentOrangeButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
     }
 }
+
+/// El disclaimer que se muestra al inicio
+struct DisclaimerView: View {
+    @Binding var isPresented: Bool
+
+    var body: some View {
+        ZStack {
+            // 1. Fondo negro en toda la pantalla
+            Color.black
+                .ignoresSafeArea()
+
+            VStack {
+                Spacer().frame(height: 40)
+
+                VStack(spacing: 24) {
+                    Text("Aviso Legal")
+                        .font(.largeTitle)
+                        .bold()
+
+                    ScrollView {
+                        Text("""
+                        NumbuX NO guarda ningún tipo de dato del usuario. 
+                        
+                        Cualquier información que se requiere es con el objetivo de NO invadir el móvil del alumno fuera del centro educativo y horario lectivo.
+                        
+                        Puede leer nuestros términos y condiciones en: www.numbux.com
+                        
+                        Para más información, por favor, contáctenos a través de los medios habilitados en nuestra web: www.numbux.com
+                        
+                        
+                        Gracias,
+                        El equipo de NumbuX.
+                        """)
+                        .padding()
+                    }
+
+                    Button("De acuerdo") {
+                        isPresented = false
+                    }
+                    .buttonStyle(AccentOrangeButtonStyle())
+                    .padding(.bottom, 30)
+                }
+                .padding()
+                .foregroundColor(.white)
+
+                Spacer()
+            }
+        }
+    }
+}
+
+
 
 
 // MARK: - Preview
